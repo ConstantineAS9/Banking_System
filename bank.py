@@ -98,18 +98,43 @@ class Bank:
         total_balance = 0
         total_accounts = len(self.accounts)
         locked_accounts = 0
+        highest_balance = 0
+        lowest_balance = None
+        total_transactions = 0
+        avrage_balance = 0
 
         for account in self.accounts:
 
             total_balance += account.balance
 
+            total_transactions += len(account.transactions)
+
+            if account.balance > highest_balance:
+                highest_balance = account.balance
+
+            if lowest_balance is None or account.balance < lowest_balance:
+                lowest_balance = account.balance
+
             if account.locked:
                 locked_accounts += 1
 
-        print("\n=== Bank Statistics ===")
-        print(f"Total Accounts: {total_accounts}")
-        print(f"Total Money: {total_balance}")
-        print(f"Locked Accounts: {locked_accounts}")
+        if total_accounts > 0:
+            avrage_balance = total_balance / total_accounts
+        
+        else:
+            lowest_balance = 0
+
+        print("\n===================================")
+        print("       BANK STATISTICS")
+        print("===================================")
+
+        print(f"Total Accounts     : {total_accounts}")
+        print(f"Total Money        : {total_balance:.2f}")
+        print(f"Avrage Balance     : {avrage_balance:.2f}")
+        print(f"Highest Balance    : {highest_balance:.2f}")
+        print(f"Lowest Balance     : {lowest_balance:.2f}")
+        print(f"Locked Accounts    : {locked_accounts}")
+        print(f"Total Transactions : {total_transactions}")
 
     def find_account(self, account_number):
 

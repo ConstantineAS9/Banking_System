@@ -32,7 +32,7 @@ def admin_session(bank):
 
             else:
 
-                print("Account not found.")
+                print("\nNo account with that number was found.")
 
 
         elif choice == 3:
@@ -42,7 +42,7 @@ def admin_session(bank):
 
         elif choice == 4:
 
-            print("Returning...")
+            print("\nReturning to the Main Menu...")
 
 
         else:
@@ -65,6 +65,8 @@ def account_session(bank, account, save_callback):
 
         if choice == 1:
 
+            print("\n--- Deposit Money ---")
+
             amount = get_float(
                 "Enter deposit amount: "
             )
@@ -77,6 +79,8 @@ def account_session(bank, account, save_callback):
 
         elif choice == 2:
 
+            print("\n--- Withdraw Money ---")
+
             amount = get_float(
                 "Enter withdrawal amount: "
             )
@@ -88,6 +92,8 @@ def account_session(bank, account, save_callback):
 
 
         elif choice == 3:
+
+            print("\n--- Transfer Money ---")
 
             receiver_number = get_integer(
                 "Enter receiver's number: "
@@ -122,6 +128,8 @@ def account_session(bank, account, save_callback):
 
         elif choice == 6:
 
+            print("\n--- Change PIN ---")
+
             old_pin = input(
                 "Enter current PIN: "
             ).strip()
@@ -155,13 +163,17 @@ def account_session(bank, account, save_callback):
 
         elif choice == 8:
 
+            print("\n--- Delete Account ---")
+
             pin = input(
                 "Enter your PIN to delete account: "
             ).strip()
 
 
             confirmation = input(
-                "Are you sure you want to delete this account? (yes/no): "
+                "WARNING!"
+                "Deleteing an account is pemament."
+                "Type 'yes' to continue: "
             ).strip().lower()
 
 
@@ -184,11 +196,11 @@ def account_session(bank, account, save_callback):
 
         elif choice == 9:
 
-            print("Logging out...")
+            print("\nYou have been logged out successfully.")
             break
 
 
 
         else:
 
-            print("Invalid input.")
+            print("\nInvalid option. Please try again.")
