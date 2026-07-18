@@ -56,7 +56,7 @@ def account_session(bank, account, save_callback):
     choice = 0
 
 
-    while choice != 9:
+    while choice != 10:
 
         show_account_menu()
 
@@ -125,8 +125,19 @@ def account_session(bank, account, save_callback):
             account.show_transactions()
 
 
-
         elif choice == 6:
+
+            print("\n--- Search Transactions ---")
+
+            keyword = input(
+                "Enter search keyword: "
+            ).strip()
+
+            account.search_transactions(keyword)
+
+
+
+        elif choice == 7:
 
             print("\n--- Change PIN ---")
 
@@ -155,13 +166,13 @@ def account_session(bank, account, save_callback):
 
 
 
-        elif choice == 7:
+        elif choice == 8:
 
             account.show_information()
 
 
 
-        elif choice == 8:
+        elif choice == 9:
 
             print("\n--- Delete Account ---")
 
@@ -171,8 +182,8 @@ def account_session(bank, account, save_callback):
 
 
             confirmation = input(
-                "WARNING!"
-                "Deleteing an account is pemament."
+                "WARNING!" \
+                "Deleting an account is permanent" \
                 "Type 'yes' to continue: "
             ).strip().lower()
 
@@ -194,7 +205,7 @@ def account_session(bank, account, save_callback):
 
 
 
-        elif choice == 9:
+        elif choice == 10:
 
             print("\nYou have been logged out successfully.")
             break

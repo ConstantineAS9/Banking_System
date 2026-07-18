@@ -20,10 +20,11 @@ def show_account_menu():
     print("3. Transfer Money")
     print("4. Check Balance")
     print("5. Transaction History")
-    print("6. Change PIN")
-    print("7. Account Information")
-    print("8. Delete Account")
-    print("9. Logout")
+    print("6. Search Transactions")
+    print("7. Change PIN")
+    print("8. Account Information")
+    print("9. Delete Account")
+    print("10. Logout")
     print()
 
 

@@ -156,6 +156,66 @@ class BankAccount:
             print(transaction)
 
 
+    def search_transactions(self, keyword):
+
+        if not isinstance(keyword, str) or not keyword.strip():
+
+            print("Invalid search keyword.")
+            return
+        
+        keyword = keyword.lower().strip()
+
+        found = False
+
+        print("\n=== Search Results ===")
+
+        for transaction in self.transactions:
+
+            if keyword in transaction.lower():
+
+                print(transaction)
+                found = True
+
+
+        if not found:
+            print("No matching transactions found.")
+
+
+    def show_transaction_statistics(self):
+
+        deposits = 0
+        withdrawals = 0
+        transfers_sent = 0
+        transfers_received = 0
+        pin_changes = 0
+
+        for transaction in self.transactions:
+
+            text = transaction.lower()
+
+            if "deposited:" in text:
+                deposits += 1
+
+            elif "withdrew:" in text:
+                withdrawals += 1
+
+            elif "transferred" in text:
+                transfers_sent += 1
+
+            elif "received" in text:
+                transfers_received += 1
+
+            elif "pin changed" in text:
+                pin_changes += 1
+
+        print("\n=== Transaction Statistics ===")
+        print(f"Deposits           : {deposits}")
+        print(f"Withdrawals         : {withdrawals}")
+        print(f"Transfers Sent     : {transfers_sent}")
+        print(f"Transfers Received : {transfers_received}")
+        print(f"PIN Changes        : {pin_changes}")
+
+
     def change_pin(self, old_pin, new_pin, confirm_pin):
 
         if isinstance(old_pin, str):
@@ -209,6 +269,7 @@ class BankAccount:
         print(f"Failed Login Attempts: {self.failed_attempts}")
         print(f"Total Transactions: {len(self.transactions)}")
         print(f"Created: {self.created_date}")
+        self.show_transaction_statistics()
 
 
     def add_transaction(self, message):
