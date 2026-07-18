@@ -10,7 +10,7 @@ class Bank:
     def set_save_callback(self, callback):
         self.save_callback = callback
 
-    def create_account(self, owner, starting_balance, pin):
+    def create_account(self, owner, starting_balance, pin, account_type="Basic"):
 
         if not owner.strip():
             print("Owner name cannot be empty.")
@@ -29,7 +29,8 @@ class Bank:
         account = BankAccount(
             owner,
             starting_balance,
-            pin
+            pin,
+            account_type=account_type
         )
 
         self.accounts.append(account)
@@ -84,13 +85,21 @@ class Bank:
 
         print("\n=== Bank Accounts ===")
 
+
         if not self.accounts:
+
             print("No accounts found.")
             return
 
+
+
         for account in self.accounts:
+
             print(
-                f"Account #: {account.account_number} | Owner: {account.owner} | Balance: {account.balance:.2f}"
+                f"Account #: {account.account_number} | "
+                f"Owner: {account.owner} | "
+                f"Type: {account.account_type} | "
+                f"Balance: {account.balance:.2f}"
             )
 
     def show_bank_statistics(self):

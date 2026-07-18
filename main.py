@@ -43,6 +43,7 @@ def main():
                 "Enter owner name: "
             ).strip()
 
+
             if not name:
 
                 print("Name cannot be empty.")
@@ -67,23 +68,55 @@ def main():
             ).strip()
 
 
-            if validate_pin(pin):
-
-                account = bank.create_account(
-                    name,
-                    balance,
-                    pin
-                )
-
-                if account:
-
-                    save_accounts()
-
-            else:
+            if not validate_pin(pin):
 
                 print(
                     "Invalid PIN. PIN must contain exactly 4 numbers."
                 )
+
+                continue
+
+
+            print("\n=== Account Type ===")
+            print("1. Basic")
+            print("2. Savings")
+            print("3. Premium")
+
+
+            account_choice = get_integer(
+                "Choose account type: "
+            )
+
+
+            account_types = {
+                1: "Basic",
+                2: "Savings",
+                3: "Premium"
+            }
+
+
+            if account_choice not in account_types:
+
+                print("Invalid account type.")
+
+                continue
+
+
+            account_type = account_types[account_choice]
+
+
+            account = bank.create_account(
+                name,
+                balance,
+                pin,
+                account_type
+            )
+
+
+            if account:
+
+                save_accounts()
+
 
 
         elif choice == 2:
@@ -116,9 +149,11 @@ def main():
                 )
 
 
+
         elif choice == 3:
 
             admin_session(bank)
+
 
 
         elif choice == 4:
@@ -130,9 +165,11 @@ def main():
             )
 
 
+
         else:
 
             print("Invalid option.")
+
 
 
 if __name__ == "__main__":

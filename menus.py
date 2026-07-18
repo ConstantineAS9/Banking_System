@@ -23,8 +23,9 @@ def show_account_menu():
     print("6. Search Transactions")
     print("7. Change PIN")
     print("8. Account Information")
-    print("9. Delete Account")
-    print("10. Logout")
+    print("9. Account Note")
+    print("10. Delete Account")
+    print("11. Logout")
     print()
 
 

@@ -56,7 +56,7 @@ def account_session(bank, account, save_callback):
     choice = 0
 
 
-    while choice != 10:
+    while choice != 11:
 
         show_account_menu()
 
@@ -171,8 +171,21 @@ def account_session(bank, account, save_callback):
             account.show_information()
 
 
-
         elif choice == 9:
+
+            print("\n--- Account Note ---")
+
+            note = input(
+                "Enter new account note: "
+            )
+
+            if account.change_account_note(note):
+
+                save_callback()
+
+
+
+        elif choice == 10:
 
             print("\n--- Delete Account ---")
 
@@ -205,7 +218,7 @@ def account_session(bank, account, save_callback):
 
 
 
-        elif choice == 10:
+        elif choice == 11:
 
             print("\nYou have been logged out successfully.")
             break
