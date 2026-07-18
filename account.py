@@ -210,7 +210,7 @@ class BankAccount:
 
         print("\n=== Transaction Statistics ===")
         print(f"Deposits           : {deposits}")
-        print(f"Withdrawals         : {withdrawals}")
+        print(f"Withdrawals        : {withdrawals}")
         print(f"Transfers Sent     : {transfers_sent}")
         print(f"Transfers Received : {transfers_received}")
         print(f"PIN Changes        : {pin_changes}")

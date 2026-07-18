@@ -101,7 +101,7 @@ class Bank:
         highest_balance = 0
         lowest_balance = None
         total_transactions = 0
-        avrage_balance = 0
+        average_balance = 0
 
         for account in self.accounts:
 
@@ -119,7 +119,7 @@ class Bank:
                 locked_accounts += 1
 
         if total_accounts > 0:
-            avrage_balance = total_balance / total_accounts
+            average_balance = total_balance / total_accounts
         
         else:
             lowest_balance = 0
@@ -130,7 +130,7 @@ class Bank:
 
         print(f"Total Accounts     : {total_accounts}")
         print(f"Total Money        : {total_balance:.2f}")
-        print(f"Avrage Balance     : {avrage_balance:.2f}")
+        print(f"Average Balance     : {average_balance:.2f}")
         print(f"Highest Balance    : {highest_balance:.2f}")
         print(f"Lowest Balance     : {lowest_balance:.2f}")
         print(f"Locked Accounts    : {locked_accounts}")
@@ -209,7 +209,16 @@ class Bank:
             f"Received {amount} from account {sender.account_number}"
         )
 
-        print("Transfer successful.")
+        print("\n===================================")
+        print("        TRANSFER RECEIPT")
+        print("===================================")
+
+        print(f"From Account : {sender.account_number}")
+        print(f"To Account   : {receiver.account_number}")
+        print(f"Amount       : {amount:.2f}")
+        print("Status        : SUCCESS")
+
+        print("===================================")
 
         if self.save_callback:
             self.save_callback()

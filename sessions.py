@@ -182,8 +182,8 @@ def account_session(bank, account, save_callback):
 
 
             confirmation = input(
-                "WARNING!" \
-                "Deleting an account is permanent" \
+                "WARNING!\n" 
+                "Deleting an account is permanent\n" 
                 "Type 'yes' to continue: "
             ).strip().lower()
 
