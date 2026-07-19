@@ -2,15 +2,21 @@ from input_handler import get_integer, get_float
 from menus import show_account_menu, show_admin_menu
 
 
+
 def admin_session(bank):
 
     choice = 0
 
-    while choice != 4:
+
+    while choice != 7:
 
         show_admin_menu()
 
-        choice = get_integer("\nChoose an option: ")
+
+        choice = get_integer(
+            "\nChoose an option: "
+        )
+
 
 
         if choice == 1:
@@ -18,21 +24,16 @@ def admin_session(bank):
             bank.show_accounts()
 
 
+
         elif choice == 2:
 
-            account_number = get_integer(
-                "Enter account number: "
-            )
+            keyword = input(
+                "Search owner/account/type: "
+            ).strip()
 
-            account = bank.find_account(account_number)
 
-            if account:
+            bank.search_accounts(keyword)
 
-                account.show_information()
-
-            else:
-
-                print("\nNo account with that number was found.")
 
 
         elif choice == 3:
@@ -40,14 +41,101 @@ def admin_session(bank):
             bank.show_bank_statistics()
 
 
+
         elif choice == 4:
 
-            print("\nReturning to the Main Menu...")
+            print(
+                "\n--- Applying Interest ---"
+            )
+
+
+            bank.apply_interest_to_all_accounts()
+
+
+
+        elif choice == 5:
+
+            print(
+                "\n--- Unlock Account ---"
+            )
+
+
+            account_number = get_integer(
+                "Enter account number: "
+            )
+
+
+            bank.unlock_account(
+                account_number
+            )
+
+
+
+        elif choice == 6:
+
+            print(
+                "\n--- Change Account Type ---"
+            )
+
+
+            account_number = get_integer(
+                "Enter account number: "
+            )
+
+
+
+            print("\n1. Basic")
+            print("2. Savings")
+            print("3. Premium")
+
+
+
+            account_choice = get_integer(
+                "Choose new account type: "
+            )
+
+
+
+            account_types = {
+                1: "Basic",
+                2: "Savings",
+                3: "Premium"
+            }
+
+
+
+            if account_choice not in account_types:
+
+                print(
+                    "Invalid account type."
+                )
+
+                continue
+
+
+
+            bank.change_account_type(
+                account_number,
+                account_types[account_choice]
+            )
+
+
+
+        elif choice == 7:
+
+            print(
+                "\nReturning to the Main Menu..."
+            )
+
 
 
         else:
 
-            print("Invalid option.")
+            print(
+                "Invalid option."
+            )
+
+
 
 
 
@@ -56,20 +144,29 @@ def account_session(bank, account, save_callback):
     choice = 0
 
 
-    while choice != 11:
+
+    while choice != 13:
 
         show_account_menu()
 
-        choice = get_integer("\nChoose an option: ")
+
+        choice = get_integer(
+            "\nChoose an option: "
+        )
+
 
 
         if choice == 1:
 
-            print("\n--- Deposit Money ---")
+            print(
+                "\n--- Deposit Money ---"
+            )
+
 
             amount = get_float(
                 "Enter deposit amount: "
             )
+
 
             if account.deposit(amount):
 
@@ -79,11 +176,15 @@ def account_session(bank, account, save_callback):
 
         elif choice == 2:
 
-            print("\n--- Withdraw Money ---")
+            print(
+                "\n--- Withdraw Money ---"
+            )
+
 
             amount = get_float(
                 "Enter withdrawal amount: "
             )
+
 
             if account.withdraw(amount):
 
@@ -93,15 +194,20 @@ def account_session(bank, account, save_callback):
 
         elif choice == 3:
 
-            print("\n--- Transfer Money ---")
+            print(
+                "\n--- Transfer Money ---"
+            )
+
 
             receiver_number = get_integer(
                 "Enter receiver's number: "
             )
 
+
             amount = get_float(
                 "Enter transfer amount: "
             )
+
 
 
             if bank.transfer_money(
@@ -125,21 +231,21 @@ def account_session(bank, account, save_callback):
             account.show_transactions()
 
 
-        elif choice == 6:
 
-            print("\n--- Search Transactions ---")
+        elif choice == 6:
 
             keyword = input(
                 "Enter search keyword: "
             ).strip()
 
-            account.search_transactions(keyword)
+
+            account.search_transactions(
+                keyword
+            )
 
 
 
         elif choice == 7:
-
-            print("\n--- Change PIN ---")
 
             old_pin = input(
                 "Enter current PIN: "
@@ -154,6 +260,7 @@ def account_session(bank, account, save_callback):
             confirm_pin = input(
                 "Confirm new PIN: "
             ).strip()
+
 
 
             if account.change_pin(
@@ -171,13 +278,13 @@ def account_session(bank, account, save_callback):
             account.show_information()
 
 
-        elif choice == 9:
 
-            print("\n--- Account Note ---")
+        elif choice == 9:
 
             note = input(
                 "Enter new account note: "
             )
+
 
             if account.change_account_note(note):
 
@@ -187,18 +294,18 @@ def account_session(bank, account, save_callback):
 
         elif choice == 10:
 
-            print("\n--- Delete Account ---")
-
             pin = input(
                 "Enter your PIN to delete account: "
             ).strip()
 
 
+
             confirmation = input(
-                "WARNING!\n" 
-                "Deleting an account is permanent\n" 
+                "WARNING!\n"
+                "Deleting an account is permanent.\n"
                 "Type 'yes' to continue: "
             ).strip().lower()
+
 
 
             if confirmation == "yes":
@@ -220,11 +327,68 @@ def account_session(bank, account, save_callback):
 
         elif choice == 11:
 
-            print("\nYou have been logged out successfully.")
-            break
+            print(
+                "\n--- Change Account Type ---"
+            )
+
+
+            print("1. Basic")
+            print("2. Savings")
+            print("3. Premium")
+
+
+
+            account_choice = get_integer(
+                "Choose new account type: "
+            )
+
+
+
+            account_types = {
+                1: "Basic",
+                2: "Savings",
+                3: "Premium"
+            }
+
+
+
+            if account_choice not in account_types:
+
+                print(
+                    "Invalid account type."
+                )
+
+                continue
+
+
+
+            if bank.change_account_type(
+                account.account_number,
+                account_types[account_choice]
+            ):
+
+                print(
+                    "Account type updated successfully."
+                )
+
+
+
+        elif choice == 12:
+
+            account.generate_monthly_statement()
+
+
+
+        elif choice == 13:
+
+            print(
+                "\nYou have been logged out successfully."
+            )
 
 
 
         else:
 
-            print("\nInvalid option. Please try again.")
+            print(
+                "\nInvalid option. Please try again."
+            )

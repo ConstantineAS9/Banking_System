@@ -25,7 +25,9 @@ def show_account_menu():
     print("8. Account Information")
     print("9. Account Note")
     print("10. Delete Account")
-    print("11. Logout")
+    print("11. Change Account Type")
+    print("12. Monthly Statement")
+    print("13. Logout")
     print()
 
 
@@ -37,5 +39,8 @@ def show_admin_menu():
     print("1. Show All Accounts")
     print("2. Search Accounts")
     print("3. Bank Statistics")
-    print("4. Back")
+    print("4. Apply Interest")
+    print("5. Unlock Account")
+    print("6. Change Account Type")
+    print("7. Back")
     print()

@@ -5,9 +5,13 @@ from account import BankAccount
 
 class SaveSystem:
 
+    FILE_NAME = "accounts.json"
+
+
     def save_accounts(self, accounts):
 
         account_data = []
+
 
         for account in accounts:
 
@@ -24,15 +28,30 @@ class SaveSystem:
                 "account_type": account.account_type,
             }
 
+
             account_data.append(account_dict)
+
+
 
         try:
 
-            with open("accounts.json", "w", encoding="utf-8") as file:
-                json.dump(account_data, file, indent=4)
+            with open(
+                self.FILE_NAME,
+                "w",
+                encoding="utf-8"
+            ) as file:
+
+                json.dump(
+                    account_data,
+                    file,
+                    indent=4
+                )
+
 
         except IOError:
+
             print("Could not save accounts.")
+
 
 
 
@@ -40,27 +59,53 @@ class SaveSystem:
 
         try:
 
-            with open("accounts.json", "r", encoding="utf-8") as file:
+            with open(
+                self.FILE_NAME,
+                "r",
+                encoding="utf-8"
+            ) as file:
+
                 account_data = json.load(file)
 
-        except (FileNotFoundError, json.JSONDecodeError):
+
+        except (
+            FileNotFoundError,
+            json.JSONDecodeError
+        ):
 
             account_data = []
 
 
+
         accounts = []
+
         seen_account_numbers = set()
+
         highest_account = 0
 
 
-        for account in account_data:
+
+        if not isinstance(account_data, list):
+
+            account_data = []
 
 
-            if not isinstance(account, dict):
+
+
+        for data in account_data:
+
+
+            if not isinstance(data, dict):
+
                 continue
 
 
-            owner = account.get("owner", "Unknown")
+
+            owner = data.get(
+                "owner",
+                "Unknown"
+            )
+
 
             if not isinstance(owner, str) or not owner.strip():
 
@@ -72,7 +117,12 @@ class SaveSystem:
 
 
 
-            balance = account.get("balance", 0)
+
+            balance = data.get(
+                "balance",
+                0
+            )
+
 
 
             if (
@@ -87,12 +137,21 @@ class SaveSystem:
 
 
 
-            account_number = account.get("account_number")
+
+            account_number = data.get(
+                "account_number"
+            )
 
 
-            if not isinstance(account_number, int):
+
+            if (
+                not isinstance(account_number, int)
+                or isinstance(account_number, bool)
+                or account_number <= 0
+            ):
 
                 continue
+
 
 
             if account_number in seen_account_numbers:
@@ -100,59 +159,35 @@ class SaveSystem:
                 continue
 
 
+
             seen_account_numbers.add(account_number)
 
 
 
-            pin = account.get("pin", "0000")
+
+            pin = data.get(
+                "pin",
+                "0000"
+            )
 
 
-            if not isinstance(pin, str) or len(pin) != 4 or not pin.isdigit():
+
+            if (
+                not isinstance(pin, str)
+                or len(pin) != 4
+                or not pin.isdigit()
+            ):
 
                 pin = "0000"
 
 
 
-            transactions = account.get("transactions", [])
 
-
-            if not isinstance(transactions, list):
-
-                transactions = []
-
-
-
-            failed_attempts = account.get("failed_attempts", 0)
-
-
-            if not isinstance(failed_attempts, int) or failed_attempts < 0:
-
-                failed_attempts = 0
-
-
-
-            locked = account.get("locked", False)
-
-
-            if not isinstance(locked, bool):
-
-                locked = False
-
-
-
-            created_date = account.get("created_date", "")
-
-
-            if not isinstance(created_date, str):
-
-                created_date = ""
-
-
-
-            account_type = account.get(
+            account_type = data.get(
                 "account_type",
                 "Basic"
             )
+
 
 
             if account_type not in [
@@ -162,6 +197,8 @@ class SaveSystem:
             ]:
 
                 account_type = "Basic"
+
+
 
 
 
@@ -175,14 +212,81 @@ class SaveSystem:
 
 
 
+            transactions = data.get(
+                "transactions",
+                []
+            )
+
+
+            if not isinstance(transactions, list):
+
+                transactions = []
+
+
+
             new_account.transactions = transactions
+
+
+
+
+            failed_attempts = data.get(
+                "failed_attempts",
+                0
+            )
+
+
+
+            if (
+                not isinstance(failed_attempts, int)
+                or failed_attempts < 0
+            ):
+
+                failed_attempts = 0
+
+
+
             new_account.failed_attempts = failed_attempts
+
+
+
+
+            locked = data.get(
+                "locked",
+                False
+            )
+
+
+
+            if not isinstance(locked, bool):
+
+                locked = False
+
+
+
             new_account.locked = locked
+
+
+
+
+
+            created_date = data.get(
+                "created_date",
+                ""
+            )
+
+
+            if not isinstance(created_date, str):
+
+                created_date = ""
+
+
+
             new_account.created_date = created_date
 
 
 
-            account_note = account.get(
+
+            account_note = data.get(
                 "account_note",
                 ""
             )
@@ -198,9 +302,12 @@ class SaveSystem:
 
 
 
+
+
             if new_account.account_number > highest_account:
 
                 highest_account = new_account.account_number
+
 
 
 
@@ -208,13 +315,17 @@ class SaveSystem:
 
 
 
+
+
         if highest_account == 0:
 
             BankAccount.next_account_number = 1001
 
+
         else:
 
             BankAccount.next_account_number = highest_account + 1
+
 
 
 

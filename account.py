@@ -25,10 +25,24 @@ class BankAccount:
     }
 
 
+    INTEREST_RATES = {
+        "Basic": 0,
+        "Savings": 0.02,
+        "Premium": 0.05
+    }
+
+
     MAX_STARTING_BALANCE = 100000
 
 
-    def __init__(self, owner, starting_balance, pin, account_number=None, account_type="Basic"):
+    def __init__(
+        self,
+        owner,
+        starting_balance,
+        pin,
+        account_number=None,
+        account_type="Basic"
+    ):
 
         if not isinstance(owner, str) or not owner.strip():
             owner = "Unknown"
@@ -49,7 +63,11 @@ class BankAccount:
         self.balance = starting_balance
 
 
-        if not isinstance(pin, str) or len(pin) != 4 or not pin.isdigit():
+        if (
+            not isinstance(pin, str)
+            or len(pin) != 4
+            or not pin.isdigit()
+        ):
             pin = "0000"
 
 
@@ -62,8 +80,9 @@ class BankAccount:
         self.account_note = ""
 
 
-        self.account_type = self.validate_account_type(account_type)
-
+        self.account_type = self.validate_account_type(
+            account_type
+        )
 
 
         if account_number is None:
@@ -89,6 +108,7 @@ class BankAccount:
         else:
 
             self.account_number = BankAccount.next_account_number
+
             BankAccount.next_account_number += 1
 
 
@@ -103,6 +123,96 @@ class BankAccount:
 
 
 
+    def change_account_type(self, new_type):
+
+        if new_type not in self.ACCOUNT_RULES:
+
+            print("Invalid account type.")
+
+            return False
+
+
+        if new_type == self.account_type:
+
+            print(
+                "You already have this account type."
+            )
+
+            return False
+
+
+        old_type = self.account_type
+
+        self.account_type = new_type
+
+
+        self.add_transaction(
+            "Account Upgrade",
+            f"Account changed: {old_type} -> {new_type}"
+        )
+
+
+        print("\n===================================")
+        print("      ACCOUNT TYPE CHANGED")
+        print("===================================")
+
+        print(f"Previous Type : {old_type}")
+        print(f"New Type      : {new_type}")
+
+        print("===================================")
+
+
+        return True
+
+
+
+    def calculate_interest(self):
+
+        interest_rate = self.INTEREST_RATES[
+            self.account_type
+        ]
+
+        return self.balance * interest_rate
+
+
+
+    def apply_interest(self):
+
+        interest = self.calculate_interest()
+
+
+        if interest <= 0:
+
+            print(
+                f"{self.account_type} account does not earn interest."
+            )
+
+            return False
+
+
+        self.balance += interest
+
+
+        self.add_transaction(
+            "Interest",
+            f"Interest Earned: {interest}"
+        )
+
+
+        print("\n===================================")
+        print("        INTEREST PAYMENT")
+        print("===================================")
+
+        print(f"Account  : {self.account_number}")
+        print(f"Interest : {interest:.2f}")
+        print(f"Balance  : {self.balance:.2f}")
+
+        print("===================================")
+
+
+        return True
+    
+
     def deposit(self, amount, create_transaction=True):
 
         if (
@@ -111,19 +221,27 @@ class BankAccount:
             or math.isnan(amount)
             or math.isinf(amount)
         ):
+
             print("Invalid amount.")
+
             return False
 
 
 
         if amount <= 0:
 
-            print("Deposit cannot be zero or negative.")
+            print(
+                "Deposit cannot be zero or negative."
+            )
+
             return False
 
 
 
-        max_deposit = self.ACCOUNT_RULES[self.account_type]["deposit"]
+        max_deposit = self.ACCOUNT_RULES[
+            self.account_type
+        ]["deposit"]
+
 
 
         if amount > max_deposit:
@@ -143,6 +261,7 @@ class BankAccount:
         if create_transaction:
 
             self.add_transaction(
+                "Deposit",
                 f"Deposited: {amount}"
             )
 
@@ -155,12 +274,13 @@ class BankAccount:
         print(f"Account : {self.account_number}")
         print(f"Amount  : {amount:.2f}")
         print(f"Balance : {self.balance:.2f}")
-        print("Status   : SUCCESS")
+        print("Status  : SUCCESS")
 
         print("===================================")
 
 
         return True
+
 
 
 
@@ -173,19 +293,26 @@ class BankAccount:
             or math.isnan(amount)
             or math.isinf(amount)
         ):
+
             print("Invalid amount.")
+
             return False
 
 
 
         if amount <= 0:
 
-            print("Withdrawal cannot be zero or negative.")
+            print(
+                "Withdrawal cannot be zero or negative."
+            )
+
             return False
 
 
 
-        max_withdrawal = self.ACCOUNT_RULES[self.account_type]["withdrawal"]
+        max_withdrawal = self.ACCOUNT_RULES[
+            self.account_type
+        ]["withdrawal"]
 
 
 
@@ -201,7 +328,10 @@ class BankAccount:
 
         if amount > self.balance:
 
-            print("Insufficient funds.")
+            print(
+                "Insufficient funds."
+            )
+
             return False
 
 
@@ -213,6 +343,7 @@ class BankAccount:
         if create_transaction:
 
             self.add_transaction(
+                "Withdrawal",
                 f"Withdrew: {amount}"
             )
 
@@ -234,11 +365,14 @@ class BankAccount:
 
 
 
+
     def show_balance(self):
 
         print(
             f"{self.account_number} {self.owner}'s balance: {self.balance:.2f}"
         )
+
+
 
 
 
@@ -249,27 +383,240 @@ class BankAccount:
 
         if not self.transactions:
 
-            print("No transactions yet.")
+            print(
+                "No transactions yet."
+            )
+
             return
+
 
 
         for transaction in self.transactions:
 
-            print(transaction)
+
+            if isinstance(transaction, dict):
+
+                print(
+                    f"{transaction.get('timestamp', 'Unknown')} | "
+                    f"{transaction.get('category', 'Unknown')} | "
+                    f"{transaction.get('message', '')}"
+                )
+
+
+            else:
+
+                print(transaction)
+
+
+
+
+
+    def generate_monthly_statement(self):
+
+        current_month = datetime.now().strftime(
+            "%Y-%m"
+        )
+
+
+        deposits = 0
+        withdrawals = 0
+        transfers_sent = 0
+        transfers_received = 0
+        interest = 0
+
+
+        monthly_transactions = []
+
+
+
+        for transaction in self.transactions:
+
+
+            if not isinstance(transaction, dict):
+
+                continue
+
+
+
+            timestamp = transaction.get(
+                "timestamp",
+                ""
+            )
+
+
+            if not timestamp.startswith(current_month):
+
+                continue
+
+
+
+            category = transaction.get(
+                "category",
+                ""
+            )
+
+
+            message = transaction.get(
+                "message",
+                ""
+            )
+
+
+            monthly_transactions.append(
+                transaction
+            )
+
+
+
+            amount = self.extract_amount(
+                message
+            )
+
+
+
+            if category == "Deposit":
+
+                deposits += amount
+
+
+            elif category == "Withdrawal":
+
+                withdrawals += amount
+
+
+            elif category == "Transfer Sent":
+
+                transfers_sent += amount
+
+
+            elif category == "Transfer Received":
+
+                transfers_received += amount
+
+
+            elif category == "Interest":
+
+                interest += amount
+
+
+                print("\n===================================")
+        print("        MONTHLY STATEMENT")
+        print("===================================")
+
+
+        print(f"Owner          : {self.owner}")
+        print(f"Account Number : {self.account_number}")
+        print(f"Account Type   : {self.account_type}")
+
+        print("-----------------------------------")
+
+        print(
+            f"Current Balance : {self.balance:.2f}"
+        )
+
+        print("-----------------------------------")
+
+        print(
+            f"Deposits              : {deposits:.2f}"
+        )
+
+        print(
+            f"Withdrawals           : {withdrawals:.2f}"
+        )
+
+        print(
+            f"Transfers Sent        : {transfers_sent:.2f}"
+        )
+
+        print(
+            f"Transfers Received    : {transfers_received:.2f}"
+        )
+
+        print(
+            f"Interest Earned       : {interest:.2f}"
+        )
+
+
+        print("-----------------------------------")
+        print("Transactions:")
+        print("-----------------------------------")
+
+
+        if not monthly_transactions:
+
+            print(
+                "No transactions this month."
+            )
+
+        else:
+
+            for transaction in monthly_transactions:
+
+                print(
+                    f"{transaction.get('timestamp')} | "
+                    f"{transaction.get('category')} | "
+                    f"{transaction.get('message')}"
+                )
+
+
+        print("===================================")
+
+
+
+
+
+    def extract_amount(self, message):
+
+        if not isinstance(message, str):
+
+            return 0
+
+
+        numbers = []
+
+
+        for word in message.replace(",", "").split():
+
+            try:
+
+                numbers.append(
+                    float(word)
+                )
+
+            except ValueError:
+
+                continue
+
+
+
+        if numbers:
+
+            return numbers[0]
+
+
+        return 0
+
 
 
 
 
     def search_transactions(self, keyword):
 
-        if not isinstance(keyword, str) or not keyword.strip():
+        if (
+            not isinstance(keyword, str)
+            or not keyword.strip()
+        ):
 
-            print("Invalid search keyword.")
+            print(
+                "Invalid search keyword."
+            )
+
             return
 
 
 
         keyword = keyword.lower().strip()
+
 
         found = False
 
@@ -277,9 +624,26 @@ class BankAccount:
         print("\n=== Search Results ===")
 
 
+
         for transaction in self.transactions:
 
-            if keyword in transaction.lower():
+
+            if isinstance(transaction, dict):
+
+                text = (
+                    str(transaction.get("category", ""))
+                    + " "
+                    + str(transaction.get("message", ""))
+                ).lower()
+
+
+            else:
+
+                text = str(transaction).lower()
+
+
+
+            if keyword in text:
 
                 print(transaction)
 
@@ -289,7 +653,10 @@ class BankAccount:
 
         if not found:
 
-            print("No matching transactions found.")
+            print(
+                "No matching transactions found."
+            )
+
 
 
 
@@ -306,42 +673,70 @@ class BankAccount:
 
         for transaction in self.transactions:
 
-            text = transaction.lower()
+
+            if not isinstance(transaction, dict):
+
+                continue
 
 
 
-            if "deposited:" in text:
+            category = transaction.get(
+                "category",
+                ""
+            ).lower()
+
+
+
+            if category == "deposit":
 
                 deposits += 1
 
 
-            elif "withdrew:" in text:
+            elif category == "withdrawal":
 
                 withdrawals += 1
 
 
-            elif "transferred" in text:
+            elif category == "transfer sent":
 
                 transfers_sent += 1
 
 
-            elif "received" in text:
+            elif category == "transfer received":
 
                 transfers_received += 1
 
 
-            elif "pin changed" in text:
+            elif category == "pin change":
 
                 pin_changes += 1
 
 
 
+
+
         print("\n=== Transaction Statistics ===")
-        print(f"Deposits           : {deposits}")
-        print(f"Withdrawals        : {withdrawals}")
-        print(f"Transfers Sent     : {transfers_sent}")
-        print(f"Transfers Received : {transfers_received}")
-        print(f"PIN Changes        : {pin_changes}")
+
+        print(
+            f"Deposits           : {deposits}"
+        )
+
+        print(
+            f"Withdrawals        : {withdrawals}"
+        )
+
+        print(
+            f"Transfers Sent     : {transfers_sent}"
+        )
+
+        print(
+            f"Transfers Received : {transfers_received}"
+        )
+
+        print(
+            f"PIN Changes        : {pin_changes}"
+        )
+
 
 
 
@@ -349,33 +744,50 @@ class BankAccount:
     def change_pin(self, old_pin, new_pin, confirm_pin):
 
         if isinstance(old_pin, str):
+
             old_pin = old_pin.strip()
 
+
         if isinstance(new_pin, str):
+
             new_pin = new_pin.strip()
 
+
         if isinstance(confirm_pin, str):
+
             confirm_pin = confirm_pin.strip()
 
 
 
         if old_pin != self.pin:
 
-            print("Incorrect current PIN.")
+            print(
+                "Incorrect current PIN."
+            )
+
             return False
 
 
 
         if new_pin != confirm_pin:
 
-            print("New PINs do not match.")
+            print(
+                "New PINs do not match."
+            )
+
             return False
 
 
 
-        if len(new_pin) != 4 or not new_pin.isdigit():
+        if (
+            not isinstance(new_pin, str)
+            or len(new_pin) != 4
+            or not new_pin.isdigit()
+        ):
 
-            print("PIN must contain exactly 4 numbers.")
+            print(
+                "PIN must contain exactly 4 numbers."
+            )
 
             return False
 
@@ -385,14 +797,18 @@ class BankAccount:
 
 
         self.add_transaction(
+            "PIN Change",
             "PIN changed"
         )
 
 
-        print("PIN changed successfully.")
+        print(
+            "PIN changed successfully."
+        )
 
 
         return True
+
 
 
 
@@ -405,13 +821,29 @@ class BankAccount:
         print(f"Account Number: {self.account_number}")
         print(f"Account Type: {self.account_type}")
         print(f"Balance: {self.balance:.2f}")
-        print(f"Account Status: {'Locked' if self.locked else 'Active'}")
-        print(f"Failed Login Attempts: {self.failed_attempts}")
-        print(f"Total Transactions: {len(self.transactions)}")
-        print(f"Created: {self.created_date}")
-        print(f"Account Note: {self.account_note if self.account_note else 'No note'}")
+        print(
+            f"Account Status: {'Locked' if self.locked else 'Active'}"
+        )
+
+        print(
+            f"Failed Login Attempts: {self.failed_attempts}"
+        )
+
+        print(
+            f"Total Transactions: {len(self.transactions)}"
+        )
+
+        print(
+            f"Created: {self.created_date}"
+        )
+
+        print(
+            f"Account Note: {self.account_note if self.account_note else 'No note'}"
+        )
+
 
         self.show_transaction_statistics()
+
 
 
 
@@ -420,7 +852,10 @@ class BankAccount:
 
         if not isinstance(note, str):
 
-            print("Invalid note.")
+            print(
+                "Invalid note."
+            )
+
             return False
 
 
@@ -429,11 +864,14 @@ class BankAccount:
 
 
         self.add_transaction(
+            "Account Note",
             "Account note updated"
         )
 
 
-        print("Account note updated successfully.")
+        print(
+            "Account note updated successfully."
+        )
 
 
         return True
@@ -441,9 +879,22 @@ class BankAccount:
 
 
 
-    def add_transaction(self, message):
 
-        if not isinstance(message, str) or not message.strip():
+    def add_transaction(self, category, message):
+
+        if (
+            not isinstance(category, str)
+            or not category.strip()
+        ):
+
+            return False
+
+
+
+        if (
+            not isinstance(message, str)
+            or not message.strip()
+        ):
 
             return False
 
@@ -454,8 +905,13 @@ class BankAccount:
         )
 
 
+
         self.transactions.append(
-            f"{timestamp} - {message.strip()}"
+            {
+                "timestamp": timestamp,
+                "category": category.strip(),
+                "message": message.strip()
+            }
         )
 
 
