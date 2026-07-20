@@ -8,6 +8,19 @@ from services.account_report_service import (
     generate_monthly_statement
 )
 
+from services.scheduled_payment_service import (
+    create_scheduled_payment,
+    show_scheduled_payments,
+    execute_payment,
+    delete_scheduled_payment
+)
+
+from services.loan_service import (
+    create_loan,
+    show_loans,
+    pay_loan
+)
+
 
 
 def account_session(
@@ -20,7 +33,7 @@ def account_session(
 
 
 
-    while choice != 13:
+    while choice != 24:
 
 
         show_account_menu()
@@ -307,6 +320,255 @@ def account_session(
 
 
         elif choice == 13:
+
+
+            if account.create_card():
+
+                save_callback()
+
+
+
+        elif choice == 14:
+
+
+            account.show_card()
+
+
+
+        elif choice == 15:
+
+
+            if account.block_card():
+
+                save_callback()
+
+
+
+        elif choice == 16:
+
+
+            if account.unblock_card():
+
+                save_callback()
+
+
+
+        elif choice == 17:
+
+
+            print(
+                "\n--- Create Scheduled Payment ---"
+            )
+
+
+            name = input(
+                "Payment name: "
+            )
+
+
+            amount = get_float(
+                "Payment amount: "
+            )
+
+
+            receiver = input(
+                "Receiver: "
+            )
+
+
+            if create_scheduled_payment(
+
+                account,
+
+                name,
+
+                amount,
+
+                receiver
+
+            ):
+
+                save_callback()
+
+
+
+
+
+        elif choice == 18:
+
+
+            show_scheduled_payments(
+                account
+            )
+
+
+
+
+
+        elif choice == 19:
+
+
+            show_scheduled_payments(
+                account
+            )
+
+
+            payment_number = get_integer(
+                "Choose payment number: "
+            )
+
+
+            if execute_payment(
+
+                account,
+
+                payment_number
+
+            ):
+
+                save_callback()
+
+
+
+
+
+        elif choice == 20:
+
+
+            show_scheduled_payments(
+                account
+            )
+
+
+            payment_number = get_integer(
+                "Choose payment number to delete: "
+            )
+
+
+            if delete_scheduled_payment(
+
+                account,
+
+                payment_number
+
+            ):
+
+                save_callback()
+
+
+        elif choice == 21:
+
+
+            print(
+                "\n=== Request Loan ==="
+            )
+
+
+            print(
+                "1. Personal"
+            )
+
+            print(
+                "2. Business"
+            )
+
+            print(
+                "3. Premium"
+            )
+
+
+            loan_choice = get_integer(
+                "Choose loan type: "
+            )
+
+
+            loan_types = {
+
+                1: "Personal",
+
+                2: "Business",
+
+                3: "Premium"
+
+            }
+
+
+            if loan_choice not in loan_types:
+
+                print(
+                    "Invalid loan type."
+                )
+
+            else:
+
+
+                amount = get_float(
+                    "Loan amount: "
+                )
+
+
+                if create_loan(
+
+                    account,
+
+                    loan_types[loan_choice],
+
+                    amount
+
+                ):
+
+                    save_callback()
+
+
+
+
+
+        elif choice == 22:
+
+
+            show_loans(
+                account
+            )
+
+
+
+
+
+        elif choice == 23:
+
+
+            show_loans(
+                account
+            )
+
+
+            loan_number = get_integer(
+                "Choose loan number: "
+            )
+
+
+            amount = get_float(
+                "Payment amount: "
+            )
+
+
+            if pay_loan(
+
+                account,
+
+                loan_number,
+
+                amount
+
+            ):
+
+                save_callback()
+
+
+
+
+
+        elif choice == 24:
 
 
             print(

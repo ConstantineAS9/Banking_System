@@ -1,5 +1,6 @@
 from datetime import datetime
 import math
+import random
 
 from services.transaction_service import (
     add_transaction,
@@ -104,6 +105,17 @@ class BankAccount:
         self.locked = False
 
         self.account_note = ""
+
+
+        # v1.4 additions
+
+        self.card = None
+
+        self.scheduled_payments = []
+
+        self.loans = []
+
+        self.credit_score = 600
 
 
 
@@ -483,6 +495,151 @@ class BankAccount:
         self.add_transaction(
             "Account Note",
             "Account note updated"
+        )
+
+
+        return True
+    
+
+    def create_card(self):
+
+        if self.card is not None:
+
+            print(
+                "Account already has a card."
+            )
+
+            return False
+
+
+        card_number = ""
+
+        for _ in range(16):
+
+            card_number += str(
+                random.randint(0, 9)
+            )
+
+
+        self.card = {
+
+            "number": card_number,
+
+            "status": "Active",
+
+            "expiry": "2030-12"
+
+        }
+
+
+        self.add_transaction(
+            "Card Created",
+            "New bank card created"
+        )
+
+
+        print(
+            "Card created successfully."
+        )
+
+
+        return True
+
+
+
+
+
+    def show_card(self):
+
+        if self.card is None:
+
+            print(
+                "No card linked to this account."
+            )
+
+            return False
+
+
+
+        print(
+            "\n=== BANK CARD ==="
+        )
+
+
+        print(
+            f"Card Number: {self.card['number']}"
+        )
+
+        print(
+            f"Expiry: {self.card['expiry']}"
+        )
+
+        print(
+            f"Status: {self.card['status']}"
+        )
+
+
+        return True
+
+
+
+
+
+    def block_card(self):
+
+        if self.card is None:
+
+            print(
+                "No card found."
+            )
+
+            return False
+
+
+
+        self.card["status"] = "Blocked"
+
+
+        self.add_transaction(
+            "Card Blocked",
+            "Bank card blocked"
+        )
+
+
+        print(
+            "Card blocked."
+        )
+
+
+        return True
+
+
+
+
+
+    def unblock_card(self):
+
+        if self.card is None:
+
+            print(
+                "No card found."
+            )
+
+            return False
+
+
+
+        self.card["status"] = "Active"
+
+
+        self.add_transaction(
+            "Card Unblocked",
+            "Bank card unblocked"
+        )
+
+
+        print(
+            "Card activated."
         )
 
 

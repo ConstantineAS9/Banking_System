@@ -95,7 +95,51 @@ def show_account_menu():
     )
 
     print(
-        "13. Logout"
+        "13. Create Bank Card"
+    )
+
+    print(
+        "14. Show Card"
+    )
+
+    print(
+        "15. Block Card"
+    )
+
+    print(
+        "16. Unblock Card"
+    )
+
+    print(
+        "17. Create Scheduled Payment"
+    )
+
+    print(
+        "18. Show Scheduled Payments"
+    )
+
+    print(
+        "19. Execute Scheduled Payment"
+    )
+
+    print(
+        "20. Delete Scheduled Payment"
+    )
+
+    print(
+        "21. Request Loan"
+    )
+
+    print(
+        "22. Show Loans"
+    )
+
+    print(
+        "23. Pay Loan"
+    )
+
+    print(
+        "24. Logout"
     )
 
 

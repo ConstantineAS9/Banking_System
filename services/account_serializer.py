@@ -36,6 +36,14 @@ def account_to_dict(account):
 
         "account_note": account.account_note,
 
+        "card": account.card,
+
+        "scheduled_payments": account.scheduled_payments,
+
+        "loans": account.loans,
+
+        "credit_score": account.credit_score,
+
         "account_type": account.account_type
 
     }
@@ -113,6 +121,29 @@ def dict_to_account(data):
 
     account.account_note = validate_string(
         data.get("account_note")
+    )
+
+
+    account.card = data.get(
+        "card"
+    )
+
+
+    account.scheduled_payments = data.get(
+        "scheduled_payments",
+        []
+    )
+
+
+    account.loans = data.get(
+        "loans",
+        []
+    )
+
+
+    account.credit_score = data.get(
+        "credit_score",
+        600
     )
 
 
