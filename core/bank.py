@@ -1,5 +1,4 @@
-from account import BankAccount
-
+from core.account import BankAccount
 
 
 class Bank:
@@ -7,6 +6,7 @@ class Bank:
     def __init__(self):
 
         self.accounts = []
+
         self.save_callback = None
 
 
@@ -33,13 +33,13 @@ class Bank:
         account_type="Basic"
     ):
 
-        if not owner.strip():
+        if not isinstance(owner, str) or not owner.strip():
 
             print(
                 "Owner name cannot be empty."
             )
 
-            return False
+            return None
 
 
 
@@ -49,7 +49,7 @@ class Bank:
                 "Starting balance cannot be negative."
             )
 
-            return False
+            return None
 
 
 
@@ -59,25 +59,31 @@ class Bank:
                 f"Maximum starting balance is {BankAccount.MAX_STARTING_BALANCE}."
             )
 
-            return False
+            return None
 
 
 
         account = BankAccount(
-            owner,
+
+            owner.strip(),
             starting_balance,
             pin,
             account_type=account_type
+
         )
 
 
-        self.accounts.append(account)
-
+        self.accounts.append(
+            account
+        )
 
 
         print(
-            f"Account created for {owner}"
+            f"Account created successfully. Account number: {account.account_number}"
         )
+
+
+        self.save()
 
 
         return account
@@ -86,11 +92,11 @@ class Bank:
 
 
 
-    def login(self, account_number, pin):
-
-        print(
-            "\n=== Login ==="
-        )
+    def login(
+        self,
+        account_number,
+        pin
+    ):
 
 
         account = self.find_account(
@@ -119,7 +125,7 @@ class Bank:
 
 
 
-        if pin != account.pin:
+        if account.pin != pin:
 
 
             account.failed_attempts += 1
@@ -151,15 +157,15 @@ class Bank:
 
 
 
-        print(
-            "Login successful."
-        )
-
-
         account.failed_attempts = 0
 
 
         self.save()
+
+
+        print(
+            "Login successful."
+        )
 
 
         return account
@@ -168,7 +174,11 @@ class Bank:
 
 
 
-    def find_account(self, account_number):
+    def find_account(
+        self,
+        account_number
+    ):
+
 
         for account in self.accounts:
 
@@ -177,15 +187,25 @@ class Bank:
                 return account
 
 
+
         return None
 
 
 
 
 
-    def load_accounts(self, accounts):
+    def load_accounts(
+        self,
+        accounts
+    ):
 
-        self.accounts = accounts
+        if isinstance(accounts, list):
+
+            self.accounts = accounts
+
+        else:
+
+            self.accounts = []
 
 
 
@@ -212,18 +232,24 @@ class Bank:
         for account in self.accounts:
 
             print(
+
                 f"Account #: {account.account_number} | "
                 f"Owner: {account.owner} | "
                 f"Type: {account.account_type} | "
                 f"Balance: {account.balance:.2f} | "
                 f"Status: {'Locked' if account.locked else 'Active'}"
+
             )
 
 
 
 
 
-    def search_accounts(self, keyword):
+    def search_accounts(
+        self,
+        keyword
+    ):
+
 
         if (
             not isinstance(keyword, str)
@@ -255,17 +281,23 @@ class Bank:
 
 
             if (
+
                 keyword in account.owner.lower()
+
                 or keyword == str(account.account_number)
+
                 or keyword in account.account_type.lower()
+
             ):
 
 
                 print(
+
                     f"Account #: {account.account_number} | "
                     f"Owner: {account.owner} | "
                     f"Type: {account.account_type} | "
                     f"Balance: {account.balance:.2f}"
+
                 )
 
 
@@ -287,9 +319,13 @@ class Bank:
     def show_bank_statistics(self):
 
         total_balance = 0
+
         total_transactions = 0
+
         locked_accounts = 0
+
         highest_balance = 0
+
         lowest_balance = None
 
 
@@ -298,6 +334,7 @@ class Bank:
 
 
             total_balance += account.balance
+
 
             total_transactions += len(
                 account.transactions
@@ -312,8 +349,11 @@ class Bank:
 
 
             if (
+
                 lowest_balance is None
+
                 or account.balance < lowest_balance
+
             ):
 
                 lowest_balance = account.balance
@@ -340,7 +380,9 @@ class Bank:
         if total_accounts:
 
             average_balance = (
+
                 total_balance / total_accounts
+
             )
 
         else:
@@ -401,6 +443,7 @@ class Bank:
         receiver_number,
         amount
     ):
+
 
         sender = self.find_account(
             sender_number
@@ -464,19 +507,25 @@ class Bank:
 
 
 
-        if receiver.deposit(
+        if not sender.withdraw(
             amount,
             False
-        ) is False:
+        ):
 
             return False
 
 
 
-        if sender.withdraw(
+        if not receiver.deposit(
             amount,
             False
-        ) is False:
+        ):
+
+
+            sender.deposit(
+                amount,
+                False
+            )
 
             return False
 
@@ -498,17 +547,13 @@ class Bank:
         self.save()
 
 
-
         print(
             "Transfer successful."
         )
 
 
         return True
-
-
-
-
+    
 
     def apply_interest_to_all_accounts(self):
 
@@ -528,8 +573,8 @@ class Bank:
         added = False
 
 
-
         for account in self.accounts:
+
 
             if account.apply_interest():
 
@@ -555,6 +600,7 @@ class Bank:
         account_number,
         new_type
     ):
+
 
         account = self.find_account(
             account_number
@@ -594,6 +640,7 @@ class Bank:
         account_number
     ):
 
+
         account = self.find_account(
             account_number
         )
@@ -621,6 +668,7 @@ class Bank:
 
 
         account.locked = False
+
         account.failed_attempts = 0
 
 
@@ -652,6 +700,7 @@ class Bank:
         account_number,
         pin
     ):
+
 
         account = self.find_account(
             account_number
@@ -692,6 +741,7 @@ class Bank:
         self.accounts.remove(
             account
         )
+
 
 
         self.save()
