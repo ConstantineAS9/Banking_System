@@ -1,12 +1,17 @@
 import json
 import os
 
+
 from core.account import BankAccount
+
 
 from services.account_serializer import (
     account_to_dict,
     dict_to_account
 )
+
+
+
 
 
 class SaveSystem:
@@ -19,21 +24,54 @@ class SaveSystem:
 
 
 
+
+
     def save_accounts(
         self,
         accounts
     ):
 
 
+        if not isinstance(
+            accounts,
+            list
+        ):
+
+            return False
+
+
+
+
+
         account_data = []
+
+
 
 
 
         for account in accounts:
 
-            account_data.append(
-                account_to_dict(account)
-            )
+
+            try:
+
+
+                account_data.append(
+
+                    account_to_dict(
+                        account
+                    )
+
+                )
+
+
+            except Exception:
+
+
+                print(
+                    "Skipping invalid account during save."
+                )
+
+
 
 
 
@@ -41,16 +79,25 @@ class SaveSystem:
 
 
             os.makedirs(
+
                 "data",
+
                 exist_ok=True
+
             )
 
 
 
+
+
             with open(
+
                 self.FILE_NAME,
+
                 "w",
+
                 encoding="utf-8"
+
             ) as file:
 
 
@@ -66,6 +113,14 @@ class SaveSystem:
 
 
 
+
+
+            return True
+
+
+
+
+
         except IOError:
 
 
@@ -74,10 +129,28 @@ class SaveSystem:
             )
 
 
+            return False
 
 
 
-    def load_accounts(self):
+
+
+
+
+    def load_accounts(
+        self
+    ):
+
+
+        if not os.path.exists(
+            self.FILE_NAME
+        ):
+
+
+            return []
+
+
+
 
 
         try:
@@ -94,7 +167,11 @@ class SaveSystem:
             ) as file:
 
 
-                account_data = json.load(file)
+                account_data = json.load(
+                    file
+                )
+
+
 
 
 
@@ -107,7 +184,14 @@ class SaveSystem:
         ):
 
 
-            account_data = []
+            print(
+                "Save file corrupted. Starting fresh."
+            )
+
+
+            return []
+
+
 
 
 
@@ -116,7 +200,10 @@ class SaveSystem:
             list
         ):
 
-            account_data = []
+
+            return []
+
+
 
 
 
@@ -128,12 +215,26 @@ class SaveSystem:
 
 
 
+
+
         for data in account_data:
 
 
-            account = dict_to_account(
-                data
-            )
+            try:
+
+
+                account = dict_to_account(
+                    data
+                )
+
+
+
+            except Exception:
+
+
+                account = None
+
+
 
 
 
@@ -143,15 +244,23 @@ class SaveSystem:
 
 
 
+
+
             if account.account_number in seen_numbers:
 
                 continue
 
 
 
+
+
             seen_numbers.add(
+
                 account.account_number
+
             )
+
+
 
 
 
@@ -165,13 +274,18 @@ class SaveSystem:
 
 
 
+
+
             accounts.append(
                 account
             )
 
 
 
-        if highest_account_number:
+
+
+        if highest_account_number > 0:
+
 
             BankAccount.next_account_number = (
 
@@ -179,9 +293,13 @@ class SaveSystem:
 
             )
 
+
         else:
 
+
             BankAccount.next_account_number = 1001
+
+
 
 
 

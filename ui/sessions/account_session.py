@@ -1,6 +1,11 @@
-from ui.input_handler import get_integer, get_float
+from ui.input_handler import (
+    get_integer,
+    get_float
+)
 
-from ui.menus import show_account_menu
+from ui.menus import (
+    show_account_menu
+)
 
 from services.account_report_service import (
     search_transactions,
@@ -23,17 +28,16 @@ from services.loan_service import (
 
 
 
+
+
 def account_session(
     bank,
     account,
     save_callback
 ):
 
-    choice = 0
 
-
-
-    while choice != 24:
+    while True:
 
 
         show_account_menu()
@@ -49,29 +53,23 @@ def account_session(
         if choice == 1:
 
 
-            print(
-                "\n--- Deposit Money ---"
-            )
-
-
             amount = get_float(
                 "Enter deposit amount: "
             )
 
 
 
-            if account.deposit(amount):
+            if account.deposit(
+                amount
+            ):
 
                 save_callback()
 
 
 
+
+
         elif choice == 2:
-
-
-            print(
-                "\n--- Withdraw Money ---"
-            )
 
 
             amount = get_float(
@@ -80,18 +78,17 @@ def account_session(
 
 
 
-            if account.withdraw(amount):
+            if account.withdraw(
+                amount
+            ):
 
                 save_callback()
 
 
 
+
+
         elif choice == 3:
-
-
-            print(
-                "\n--- Transfer Money ---"
-            )
 
 
             receiver_number = get_integer(
@@ -119,10 +116,14 @@ def account_session(
 
 
 
+
+
         elif choice == 4:
 
 
             account.show_balance()
+
+
 
 
 
@@ -135,6 +136,8 @@ def account_session(
             show_transactions(
                 account
             )
+
+
 
 
 
@@ -154,6 +157,8 @@ def account_session(
                 keyword
 
             )
+
+
 
 
 
@@ -189,13 +194,14 @@ def account_session(
                 save_callback()
 
 
-
         elif choice == 8:
 
 
             show_information(
                 account
             )
+
+
 
 
 
@@ -213,6 +219,8 @@ def account_session(
             ):
 
                 save_callback()
+
+
 
 
 
@@ -256,7 +264,9 @@ def account_session(
                     )
 
 
-                    break
+                    return
+
+
 
 
 
@@ -283,7 +293,7 @@ def account_session(
 
 
 
-            types = {
+            account_types = {
 
                 1: "Basic",
 
@@ -295,18 +305,20 @@ def account_session(
 
 
 
-            if account_choice in types:
+            if account_choice in account_types:
 
 
                 if bank.change_account_type(
 
                     account.account_number,
 
-                    types[account_choice]
+                    account_types[account_choice]
 
                 ):
 
                     save_callback()
+
+
 
 
 
@@ -319,7 +331,18 @@ def account_session(
 
 
 
+
+
         elif choice == 13:
+
+
+            account.show_notifications()
+
+
+
+
+
+        elif choice == 14:
 
 
             if account.create_card():
@@ -328,14 +351,18 @@ def account_session(
 
 
 
-        elif choice == 14:
+
+
+        elif choice == 15:
 
 
             account.show_card()
 
 
 
-        elif choice == 15:
+
+
+        elif choice == 16:
 
 
             if account.block_card():
@@ -344,49 +371,12 @@ def account_session(
 
 
 
-        elif choice == 16:
-
-
-            if account.unblock_card():
-
-                save_callback()
-
 
 
         elif choice == 17:
 
 
-            print(
-                "\n--- Create Scheduled Payment ---"
-            )
-
-
-            name = input(
-                "Payment name: "
-            )
-
-
-            amount = get_float(
-                "Payment amount: "
-            )
-
-
-            receiver = input(
-                "Receiver: "
-            )
-
-
-            if create_scheduled_payment(
-
-                account,
-
-                name,
-
-                amount,
-
-                receiver
-
-            ):
+            if account.unblock_card():
 
                 save_callback()
 
@@ -397,9 +387,43 @@ def account_session(
         elif choice == 18:
 
 
-            show_scheduled_payments(
-                account
+            print(
+                "\n=== Create Scheduled Payment ==="
             )
+
+
+
+            name = input(
+                "Payment name: "
+            ).strip()
+
+
+
+            amount = get_float(
+                "Payment amount: "
+            )
+
+
+
+            day = get_integer(
+                "Payment day: "
+            )
+
+
+
+            if create_scheduled_payment(
+
+                account,
+
+                name,
+
+                amount,
+
+                day
+
+            ):
+
+                save_callback()
 
 
 
@@ -413,9 +437,22 @@ def account_session(
             )
 
 
+
+
+
+        elif choice == 20:
+
+
+            show_scheduled_payments(
+                account
+            )
+
+
+
             payment_number = get_integer(
                 "Choose payment number: "
             )
+
 
 
             if execute_payment(
@@ -432,7 +469,7 @@ def account_session(
 
 
 
-        elif choice == 20:
+        elif choice == 21:
 
 
             show_scheduled_payments(
@@ -440,9 +477,11 @@ def account_session(
             )
 
 
+
             payment_number = get_integer(
                 "Choose payment number to delete: "
             )
+
 
 
             if delete_scheduled_payment(
@@ -456,7 +495,7 @@ def account_session(
                 save_callback()
 
 
-        elif choice == 21:
+        elif choice == 22:
 
 
             print(
@@ -477,9 +516,11 @@ def account_session(
             )
 
 
+
             loan_choice = get_integer(
                 "Choose loan type: "
             )
+
 
 
             loan_types = {
@@ -493,11 +534,14 @@ def account_session(
             }
 
 
+
             if loan_choice not in loan_types:
+
 
                 print(
                     "Invalid loan type."
                 )
+
 
             else:
 
@@ -505,6 +549,7 @@ def account_session(
                 amount = get_float(
                     "Loan amount: "
                 )
+
 
 
                 if create_loan(
@@ -523,17 +568,6 @@ def account_session(
 
 
 
-        elif choice == 22:
-
-
-            show_loans(
-                account
-            )
-
-
-
-
-
         elif choice == 23:
 
 
@@ -542,14 +576,28 @@ def account_session(
             )
 
 
+
+
+
+        elif choice == 24:
+
+
+            show_loans(
+                account
+            )
+
+
+
             loan_number = get_integer(
                 "Choose loan number: "
             )
 
 
+
             amount = get_float(
                 "Payment amount: "
             )
+
 
 
             if pay_loan(
@@ -568,12 +616,17 @@ def account_session(
 
 
 
-        elif choice == 24:
+        elif choice == 25:
 
 
             print(
                 "Logged out."
             )
+
+
+            break
+
+
 
 
 

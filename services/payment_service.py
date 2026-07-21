@@ -2,12 +2,84 @@ from core.scheduled_payment import ScheduledPayment
 
 
 
+
+
 def add_scheduled_payment(
     account,
     name,
     amount,
     day
 ):
+
+
+    if not isinstance(
+        name,
+        str
+    ) or not name.strip():
+
+        print(
+            "Payment name cannot be empty."
+        )
+
+        return None
+
+
+
+
+
+    if not isinstance(
+        amount,
+        (int, float)
+    ):
+
+        print(
+            "Invalid payment amount."
+        )
+
+        return None
+
+
+
+
+
+    if amount <= 0:
+
+        print(
+            "Payment amount must be positive."
+        )
+
+        return None
+
+
+
+
+
+    if not isinstance(
+        day,
+        int
+    ):
+
+        print(
+            "Invalid payment day."
+        )
+
+        return None
+
+
+
+
+
+    if day < 1 or day > 31:
+
+        print(
+            "Payment day must be between 1 and 31."
+        )
+
+        return None
+
+
+
+
 
     if not hasattr(
         account,
@@ -18,9 +90,11 @@ def add_scheduled_payment(
 
 
 
+
+
     payment = ScheduledPayment(
 
-        name,
+        name.strip(),
 
         amount,
 
@@ -29,20 +103,45 @@ def add_scheduled_payment(
     )
 
 
+
+
+
     account.scheduled_payments.append(
         payment
     )
 
 
+
+
+
     account.add_transaction(
+
         "Scheduled Payment Created",
+
         f"{name}: {amount}"
+
     )
+
+
+
+
+
+    account.add_notification(
+
+        "Scheduled Payment",
+
+        f"Scheduled payment '{name}' created."
+
+    )
+
+
+
 
 
     print(
         "Scheduled payment added successfully."
     )
+
 
 
     return payment
@@ -51,7 +150,12 @@ def add_scheduled_payment(
 
 
 
-def show_scheduled_payments(account):
+
+
+def show_scheduled_payments(
+    account
+):
+
 
     if not hasattr(
         account,
@@ -67,32 +171,72 @@ def show_scheduled_payments(account):
 
 
 
+
+
     print(
-        "\n=== Scheduled Payments ==="
+        "\n==================================="
+    )
+
+    print(
+        "       SCHEDULED PAYMENTS"
+    )
+
+    print(
+        "==================================="
     )
 
 
+
+
+
     for index, payment in enumerate(
+
         account.scheduled_payments,
+
         start=1
+
     ):
 
 
-        print(
-
-            f"{index}. "
-            f"{payment.name} | "
-            f"{payment.amount:.2f} | "
-            f"Day: {payment.day} | "
-            f"Status: {'Active' if payment.active else 'Cancelled'}"
-
-        )
+        if isinstance(
+            payment,
+            ScheduledPayment
+        ):
 
 
+            print(
+
+                f"{index}. "
+
+                f"{payment.name} | "
+
+                f"{payment.amount:.2f} | "
+
+                f"Day: {payment.day} | "
+
+                f"Status: {'Active' if payment.active else 'Cancelled'}"
+
+            )
 
 
 
-def process_payments(account):
+        else:
+
+
+            print(
+                f"{index}. Invalid payment data"
+            )
+
+
+
+
+
+
+
+def process_payments(
+    account
+):
+
 
     if not hasattr(
         account,
@@ -103,11 +247,21 @@ def process_payments(account):
 
 
 
+
+
     for payment in account.scheduled_payments:
 
-        payment.process(
-            account
-        )
+
+        if isinstance(
+            payment,
+            ScheduledPayment
+        ):
+
+            payment.process(
+                account
+            )
+
+
 
 
 
@@ -118,6 +272,7 @@ def cancel_payment(
     index
 ):
 
+
     if not hasattr(
         account,
         "scheduled_payments"
@@ -127,7 +282,103 @@ def cancel_payment(
 
 
 
-    if index < 0 or index >= len(
+
+
+    if index < 1 or index > len(
+        account.scheduled_payments
+    ):
+
+        print(
+            "Invalid payment."
+        )
+
+        return False
+
+
+
+
+
+    payment = account.scheduled_payments[
+        index - 1
+    ]
+
+
+
+
+
+    if not isinstance(
+        payment,
+        ScheduledPayment
+    ):
+
+        return False
+
+
+
+
+
+    payment.cancel()
+
+
+
+
+
+    account.add_transaction(
+
+        "Scheduled Payment Cancelled",
+
+        payment.name
+
+    )
+
+
+
+
+
+    account.add_notification(
+
+        "Scheduled Payment",
+
+        f"Scheduled payment '{payment.name}' cancelled."
+
+    )
+
+
+
+
+
+    print(
+        "Scheduled payment cancelled."
+    )
+
+
+
+    return True
+
+
+
+
+
+
+
+def activate_payment(
+    account,
+    index
+):
+
+
+    if not hasattr(
+        account,
+        "scheduled_payments"
+    ):
+
+        return False
+
+
+
+
+
+    if index < 1 or index > len(
         account.scheduled_payments
     ):
 
@@ -135,14 +386,31 @@ def cancel_payment(
 
 
 
-    account.scheduled_payments[index].cancel()
+
+
+    payment = account.scheduled_payments[
+        index - 1
+    ]
 
 
 
-    account.add_transaction(
-        "Scheduled Payment Cancelled",
-        "Payment cancelled"
-    )
+
+
+    if not isinstance(
+        payment,
+        ScheduledPayment
+    ):
+
+        return False
+
+
+
+
+
+    payment.activate()
+
+
+
 
 
     return True

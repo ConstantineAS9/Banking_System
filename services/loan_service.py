@@ -1,30 +1,47 @@
 from datetime import datetime
 
+
 from services.credit_service import (
     increase_credit_score,
-    decrease_credit_score
+    decrease_credit_score,
+    can_receive_loan
 )
+
+
 
 
 
 LOAN_TYPES = {
 
     "Personal": {
+
         "interest": 0.05,
+
         "max": 10000
+
     },
+
 
     "Business": {
+
         "interest": 0.08,
+
         "max": 50000
+
     },
 
+
     "Premium": {
+
         "interest": 0.03,
+
         "max": 100000
+
     }
 
 }
+
+
 
 
 
@@ -44,18 +61,23 @@ def create_loan(
         )
 
         return False
-    
-    if account.credit_score < 450:
+
+
+
+
+
+    if not isinstance(
+        amount,
+        (int, float)
+    ):
 
         print(
-            "Loan rejected. Credit score too low."
+            "Invalid loan amount."
         )
 
         return False
 
 
-
-    rules = LOAN_TYPES[loan_type]
 
 
 
@@ -69,6 +91,28 @@ def create_loan(
 
 
 
+
+
+    if not can_receive_loan(
+        account
+    ):
+
+        print(
+            "Loan rejected. Credit score too low."
+        )
+
+        return False
+
+
+
+
+
+    rules = LOAN_TYPES[loan_type]
+
+
+
+
+
     if amount > rules["max"]:
 
         print(
@@ -79,11 +123,14 @@ def create_loan(
 
 
 
+
+
     interest = amount * rules["interest"]
 
 
+    total_amount = amount + interest
 
-    total = amount + interest
+
 
 
 
@@ -95,7 +142,7 @@ def create_loan(
 
         "interest": interest,
 
-        "remaining": total,
+        "remaining": total_amount,
 
         "created": datetime.now().strftime(
             "%Y-%m-%d"
@@ -105,12 +152,30 @@ def create_loan(
 
 
 
+
+
+    if not hasattr(
+        account,
+        "loans"
+    ):
+
+        account.loans = []
+
+
+
+
+
     account.loans.append(
         loan
     )
 
 
+
+
+
     account.balance += amount
+
+
 
 
 
@@ -118,21 +183,42 @@ def create_loan(
 
         "Loan Received",
 
-        f"{loan_type} loan {amount}"
+        f"{loan_type} loan received: {amount}"
 
     )
+
+
+
 
 
     increase_credit_score(
+
         account,
+
         5
+
     )
+
+
+
+
+
+    account.add_notification(
+
+        "Loan Approved",
+
+        f"{loan_type} loan of {amount:.2f} approved."
+
+    )
+
+
 
 
 
     print(
-        "Loan approved."
+        "Loan approved successfully."
     )
+
 
 
     return True
@@ -141,22 +227,42 @@ def create_loan(
 
 
 
-def show_loans(account):
 
+
+def show_loans(
+    account
+):
 
     print(
-        "\n=== LOANS ==="
+        "\n==================================="
+    )
+
+    print(
+        "              LOANS"
+    )
+
+    print(
+        "==================================="
     )
 
 
 
-    if not account.loans:
+
+
+    if not hasattr(
+        account,
+        "loans"
+    ) or not account.loans:
+
 
         print(
             "No active loans."
         )
 
+
         return
+
+
 
 
 
@@ -172,11 +278,16 @@ def show_loans(account):
         print(
 
             f"{index}. "
-            f"{loan['type']} | "
-            f"Original: {loan['amount']:.2f} | "
-            f"Remaining: {loan['remaining']:.2f}"
+
+            f"{loan.get('type', 'Unknown')} | "
+
+            f"Original: {loan.get('amount', 0):.2f} | "
+
+            f"Remaining: {loan.get('remaining', 0):.2f}"
 
         )
+
+
 
 
 
@@ -189,7 +300,20 @@ def pay_loan(
 ):
 
 
-    if index < 1 or index > len(account.loans):
+    if not hasattr(
+        account,
+        "loans"
+    ):
+
+        return False
+
+
+
+
+
+    if index < 1 or index > len(
+        account.loans
+    ):
 
         print(
             "Invalid loan."
@@ -199,17 +323,38 @@ def pay_loan(
 
 
 
-    loan = account.loans[index - 1]
 
 
-
-    if amount <= 0:
+    if not isinstance(
+        amount,
+        (int, float)
+    ):
 
         print(
             "Invalid payment."
         )
 
         return False
+
+
+
+
+
+    if amount <= 0:
+
+        print(
+            "Payment must be positive."
+        )
+
+        return False
+
+
+
+
+
+    loan = account.loans[index - 1]
+
+
 
 
 
@@ -223,9 +368,13 @@ def pay_loan(
 
 
 
+
+
     if amount > loan["remaining"]:
 
         amount = loan["remaining"]
+
+
 
 
 
@@ -233,7 +382,11 @@ def pay_loan(
 
 
 
+
+
     loan["remaining"] -= amount
+
+
 
 
 
@@ -241,37 +394,67 @@ def pay_loan(
 
         "Loan Payment",
 
-        f"Paid loan {amount}"
+        f"Paid loan: {amount}"
 
     )
+
+
+
 
 
     increase_credit_score(
+
         account,
+
         2
+
     )
+
+
+
+
+
+    account.add_notification(
+
+        "Loan Payment",
+
+        f"Loan payment of {amount:.2f} completed."
+
+    )
+
+
 
 
 
     if loan["remaining"] <= 0:
 
+
         account.loans.pop(
             index - 1
         )
+
 
         print(
             "Loan fully paid."
         )
 
 
+
     else:
+
 
         print(
             "Loan payment successful."
         )
 
 
+
     return True
+
+
+
+
+
 
 
 def mark_late_payment(
@@ -280,7 +463,20 @@ def mark_late_payment(
 ):
 
 
-    if index < 1 or index > len(account.loans):
+    if not hasattr(
+        account,
+        "loans"
+    ):
+
+        return False
+
+
+
+
+
+    if index < 1 or index > len(
+        account.loans
+    ):
 
         print(
             "Invalid loan."
@@ -290,27 +486,54 @@ def mark_late_payment(
 
 
 
+
+
     loan = account.loans[index - 1]
 
 
+
+
+
     decrease_credit_score(
+
         account,
+
         20
+
     )
+
+
+
 
 
     account.add_transaction(
 
         "Late Loan Payment",
 
-        f"Late payment on {loan['type']} loan"
+        f"Late payment on {loan.get('type', 'Unknown')} loan"
 
     )
+
+
+
+
+
+    account.add_notification(
+
+        "Late Payment",
+
+        "A late loan payment was recorded."
+
+    )
+
+
+
 
 
     print(
         "Late payment recorded."
     )
+
 
 
     return True

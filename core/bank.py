@@ -11,9 +11,19 @@ class Bank:
 
 
 
-    def set_save_callback(self, callback):
+    # =========================
+    # SAVE SYSTEM CONNECTION
+    # =========================
+
+
+    def set_save_callback(
+        self,
+        callback
+    ):
 
         self.save_callback = callback
+
+
 
 
 
@@ -25,6 +35,11 @@ class Bank:
 
 
 
+    # =========================
+    # ACCOUNT CREATION
+    # =========================
+
+
     def create_account(
         self,
         owner,
@@ -32,6 +47,7 @@ class Bank:
         pin,
         account_type="Basic"
     ):
+
 
         if not isinstance(owner, str) or not owner.strip():
 
@@ -56,7 +72,9 @@ class Bank:
         if starting_balance > BankAccount.MAX_STARTING_BALANCE:
 
             print(
+
                 f"Maximum starting balance is {BankAccount.MAX_STARTING_BALANCE}."
+
             )
 
             return None
@@ -65,31 +83,45 @@ class Bank:
 
         account = BankAccount(
 
-            owner.strip(),
+            owner,
+
             starting_balance,
+
             pin,
+
             account_type=account_type
 
         )
 
 
+
         self.accounts.append(
+
             account
+
         )
+
 
 
         print(
+
             f"Account created successfully. Account number: {account.account_number}"
+
         )
 
 
+
         self.save()
+
 
 
         return account
 
 
 
+    # =========================
+    # LOGIN SYSTEM
+    # =========================
 
 
     def login(
@@ -100,7 +132,9 @@ class Bank:
 
 
         account = self.find_account(
+
             account_number
+
         )
 
 
@@ -134,17 +168,23 @@ class Bank:
 
             if account.failed_attempts >= 3:
 
+
                 account.locked = True
 
+
                 print(
+
                     "Too many failed attempts. Account locked."
+
                 )
 
 
             else:
 
                 print(
+
                     f"Wrong PIN. Attempt {account.failed_attempts}/3"
+
                 )
 
 
@@ -152,15 +192,17 @@ class Bank:
             self.save()
 
 
-            return None
 
+            return None
 
 
 
         account.failed_attempts = 0
 
 
+
         self.save()
+
 
 
         print(
@@ -168,10 +210,14 @@ class Bank:
         )
 
 
+
         return account
 
 
 
+    # =========================
+    # FIND ACCOUNT
+    # =========================
 
 
     def find_account(
@@ -182,6 +228,7 @@ class Bank:
 
         for account in self.accounts:
 
+
             if account.account_number == account_number:
 
                 return account
@@ -189,9 +236,11 @@ class Bank:
 
 
         return None
+    
 
-
-
+        # =========================
+    # LOAD SYSTEM
+    # =========================
 
 
     def load_accounts(
@@ -199,9 +248,11 @@ class Bank:
         accounts
     ):
 
+
         if isinstance(accounts, list):
 
             self.accounts = accounts
+
 
         else:
 
@@ -209,12 +260,16 @@ class Bank:
 
 
 
+    # =========================
+    # ACCOUNT DISPLAY
+    # =========================
 
 
     def show_accounts(self):
 
+
         print(
-            "\n=== Bank Accounts ==="
+            "\n=== BANK ACCOUNTS ==="
         )
 
 
@@ -231,18 +286,38 @@ class Bank:
 
         for account in self.accounts:
 
-            print(
 
-                f"Account #: {account.account_number} | "
-                f"Owner: {account.owner} | "
-                f"Type: {account.account_type} | "
-                f"Balance: {account.balance:.2f} | "
-                f"Status: {'Locked' if account.locked else 'Active'}"
+            status = (
+
+                "Locked"
+
+                if account.locked
+
+                else "Active"
 
             )
 
 
 
+            print(
+
+                f"Account #: {account.account_number} | "
+
+                f"Owner: {account.owner} | "
+
+                f"Type: {account.account_type} | "
+
+                f"Balance: {account.balance:.2f} | "
+
+                f"Status: {status}"
+
+            )
+
+
+
+    # =========================
+    # ACCOUNT SEARCH
+    # =========================
 
 
     def search_accounts(
@@ -251,10 +326,7 @@ class Bank:
     ):
 
 
-        if (
-            not isinstance(keyword, str)
-            or not keyword.strip()
-        ):
+        if not isinstance(keyword, str) or not keyword.strip():
 
             print(
                 "Invalid search."
@@ -265,6 +337,7 @@ class Bank:
 
 
         keyword = keyword.lower().strip()
+
 
 
         found = False
@@ -294,11 +367,15 @@ class Bank:
                 print(
 
                     f"Account #: {account.account_number} | "
+
                     f"Owner: {account.owner} | "
+
                     f"Type: {account.account_type} | "
+
                     f"Balance: {account.balance:.2f}"
 
                 )
+
 
 
                 found = True
@@ -314,9 +391,13 @@ class Bank:
 
 
 
+    # =========================
+    # BANK STATISTICS
+    # =========================
 
 
     def show_bank_statistics(self):
+
 
         total_balance = 0
 
@@ -336,8 +417,11 @@ class Bank:
             total_balance += account.balance
 
 
+
             total_transactions += len(
+
                 account.transactions
+
             )
 
 
@@ -368,7 +452,9 @@ class Bank:
 
 
         total_accounts = len(
+
             self.accounts
+
         )
 
 
@@ -385,10 +471,10 @@ class Bank:
 
             )
 
+
         else:
 
             lowest_balance = 0
-
 
 
 
@@ -397,7 +483,7 @@ class Bank:
         )
 
         print(
-            "       BANK STATISTICS"
+            "        BANK STATISTICS"
         )
 
         print(
@@ -409,32 +495,40 @@ class Bank:
             f"Total Accounts     : {total_accounts}"
         )
 
+
         print(
             f"Total Money        : {total_balance:.2f}"
         )
+
 
         print(
             f"Average Balance    : {average_balance:.2f}"
         )
 
+
         print(
             f"Highest Balance    : {highest_balance:.2f}"
         )
+
 
         print(
             f"Lowest Balance     : {lowest_balance:.2f}"
         )
 
+
         print(
             f"Locked Accounts    : {locked_accounts}"
         )
+
 
         print(
             f"Total Transactions : {total_transactions}"
         )
 
 
-
+    # =========================
+    # MONEY TRANSFERS
+    # =========================
 
 
     def transfer_money(
@@ -446,12 +540,16 @@ class Bank:
 
 
         sender = self.find_account(
+
             sender_number
+
         )
 
 
         receiver = self.find_account(
+
             receiver_number
+
         )
 
 
@@ -486,10 +584,10 @@ class Bank:
 
 
 
-        if amount <= 0:
+        if not isinstance(amount, (int, float)) or amount <= 0:
 
             print(
-                "Transfer amount must be positive."
+                "Invalid transfer amount."
             )
 
             return False
@@ -506,10 +604,12 @@ class Bank:
 
 
 
-
         if not sender.withdraw(
+
             amount,
+
             False
+
         ):
 
             return False
@@ -517,29 +617,64 @@ class Bank:
 
 
         if not receiver.deposit(
+
             amount,
+
             False
+
         ):
 
 
             sender.deposit(
+
                 amount,
+
                 False
+
             )
+
 
             return False
 
 
 
+
         sender.add_transaction(
+
             "Transfer Sent",
+
             f"Transferred {amount} to account {receiver.account_number}"
+
         )
 
 
+
         receiver.add_transaction(
+
             "Transfer Received",
+
             f"Received {amount} from account {sender.account_number}"
+
+        )
+
+
+
+        sender.add_notification(
+
+            "Transfer",
+
+            f"You sent {amount:.2f} to account {receiver.account_number}."
+
+        )
+
+
+
+        receiver.add_notification(
+
+            "Transfer",
+
+            f"You received {amount:.2f} from account {sender.account_number}."
+
         )
 
 
@@ -547,15 +682,24 @@ class Bank:
         self.save()
 
 
+
         print(
             "Transfer successful."
         )
 
 
+
         return True
-    
+
+
+
+    # =========================
+    # INTEREST SYSTEM
+    # =========================
+
 
     def apply_interest_to_all_accounts(self):
+
 
         print(
             "\n==================================="
@@ -570,7 +714,9 @@ class Bank:
         )
 
 
-        added = False
+
+        applied = False
+
 
 
         for account in self.accounts:
@@ -578,21 +724,25 @@ class Bank:
 
             if account.apply_interest():
 
-                added = True
+                applied = True
 
 
 
-        if not added:
+        if not applied:
 
             print(
                 "No accounts received interest."
             )
 
 
+
         self.save()
 
 
 
+    # =========================
+    # ACCOUNT TYPE MANAGEMENT
+    # =========================
 
 
     def change_account_type(
@@ -603,7 +753,9 @@ class Bank:
 
 
         account = self.find_account(
+
             account_number
+
         )
 
 
@@ -619,11 +771,14 @@ class Bank:
 
 
         if account.change_account_type(
+
             new_type
+
         ):
 
 
             self.save()
+
 
             return True
 
@@ -633,6 +788,9 @@ class Bank:
 
 
 
+    # =========================
+    # ACCOUNT UNLOCKING
+    # =========================
 
 
     def unlock_account(
@@ -642,7 +800,9 @@ class Bank:
 
 
         account = self.find_account(
+
             account_number
+
         )
 
 
@@ -669,13 +829,27 @@ class Bank:
 
         account.locked = False
 
+
         account.failed_attempts = 0
 
 
 
         account.add_transaction(
+
             "Admin Action",
+
             "Account unlocked by admin"
+
+        )
+
+
+
+        account.add_notification(
+
+            "Security",
+
+            "Your account was unlocked by an administrator."
+
         )
 
 
@@ -689,10 +863,14 @@ class Bank:
         )
 
 
+
         return True
 
 
 
+    # =========================
+    # ACCOUNT DELETION
+    # =========================
 
 
     def delete_account(
@@ -703,7 +881,9 @@ class Bank:
 
 
         account = self.find_account(
+
             account_number
+
         )
 
 
@@ -731,7 +911,9 @@ class Bank:
         if account.balance != 0:
 
             print(
+
                 "Account must have zero balance before deletion."
+
             )
 
             return False
@@ -739,7 +921,9 @@ class Bank:
 
 
         self.accounts.remove(
+
             account
+
         )
 
 
@@ -751,6 +935,7 @@ class Bank:
         print(
             "Account deleted successfully."
         )
+
 
 
         return True

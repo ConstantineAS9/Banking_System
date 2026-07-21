@@ -1,18 +1,7 @@
 from datetime import datetime
 import math
-import random
 
-from services.transaction_service import (
-    add_transaction,
-    show_transactions
-)
-
-from ui.receipts import (
-    show_deposit_receipt,
-    show_withdrawal_receipt,
-    show_interest_payment,
-    show_account_type_change
-)
+from services.transaction_service import add_transaction
 
 
 class BankAccount:
@@ -36,14 +25,18 @@ class BankAccount:
             "deposit": 500000,
             "withdrawal": 100000
         }
+
     }
 
 
     INTEREST_RATES = {
 
         "Basic": 0,
+
         "Savings": 0.02,
+
         "Premium": 0.05
+
     }
 
 
@@ -60,7 +53,6 @@ class BankAccount:
         account_type="Basic"
     ):
 
-
         self.owner = (
             owner.strip()
             if isinstance(owner, str) and owner.strip()
@@ -69,11 +61,17 @@ class BankAccount:
 
 
         if (
+
             not isinstance(starting_balance, (int, float))
+
             or isinstance(starting_balance, bool)
+
             or math.isnan(starting_balance)
+
             or math.isinf(starting_balance)
+
             or starting_balance < 0
+
         ):
 
             starting_balance = 0
@@ -85,12 +83,17 @@ class BankAccount:
 
 
         if (
+
             isinstance(pin, str)
+
             and len(pin) == 4
+
             and pin.isdigit()
+
         ):
 
             self.pin = pin
+
 
         else:
 
@@ -100,29 +103,55 @@ class BankAccount:
 
         self.transactions = []
 
+
         self.failed_attempts = 0
 
+
         self.locked = False
+
 
         self.account_note = ""
 
 
-        # v1.4 additions
+        # Bank card object
+        # Saved and restored through serializer
 
         self.card = None
 
+
+
+        # Scheduled payments
+
         self.scheduled_payments = []
 
+
+
+        # Loan system
+
         self.loans = []
+
+
+
+        # Credit system
 
         self.credit_score = 600
 
 
 
+        # Notification system
+
+        self.notifications = []
+
+
+
         self.account_type = (
+
             account_type
+
             if account_type in self.ACCOUNT_RULES
+
             else "Basic"
+
         )
 
 
@@ -148,18 +177,32 @@ class BankAccount:
 
 
 
+    # =========================
+    # TRANSACTIONS
+    # =========================
+
+
     def add_transaction(
         self,
         category,
         message
     ):
 
-        add_transaction(
+        return add_transaction(
+
             self,
+
             category,
+
             message
+
         )
 
+
+
+    # =========================
+    # MONEY OPERATIONS
+    # =========================
 
 
     def deposit(
@@ -190,7 +233,9 @@ class BankAccount:
 
 
         limit = self.ACCOUNT_RULES[
+
             self.account_type
+
         ]["deposit"]
 
 
@@ -198,7 +243,9 @@ class BankAccount:
         if amount > limit:
 
             print(
+
                 f"Maximum deposit is {limit}."
+
             )
 
             return False
@@ -212,16 +259,22 @@ class BankAccount:
         if create_transaction:
 
             self.add_transaction(
+
                 "Deposit",
+
                 f"Deposited: {amount}"
+
             )
 
 
+            self.add_notification(
 
-        show_deposit_receipt(
-            self,
-            amount
-        )
+                "Deposit",
+
+                f"You deposited {amount:.2f}."
+
+            )
+
 
 
         return True
@@ -256,7 +309,9 @@ class BankAccount:
 
 
         limit = self.ACCOUNT_RULES[
+
             self.account_type
+
         ]["withdrawal"]
 
 
@@ -264,7 +319,9 @@ class BankAccount:
         if amount > limit:
 
             print(
+
                 f"Maximum withdrawal is {limit}."
+
             )
 
             return False
@@ -288,29 +345,45 @@ class BankAccount:
         if create_transaction:
 
             self.add_transaction(
+
                 "Withdrawal",
+
                 f"Withdrew: {amount}"
+
+            )
+
+
+            self.add_notification(
+
+                "Withdrawal",
+
+                f"You withdrew {amount:.2f}."
+
             )
 
 
 
-        show_withdrawal_receipt(
-            self,
-            amount
-        )
-
-
         return True
+    
+
+        # =========================
+    # VALIDATION
+    # =========================
 
 
-
-    def validate_amount(self, amount):
+    def validate_amount(
+        self,
+        amount
+    ):
 
         return (
 
             isinstance(amount, (int, float))
+
             and not isinstance(amount, bool)
+
             and not math.isnan(amount)
+
             and not math.isinf(amount)
 
         )
@@ -323,6 +396,11 @@ class BankAccount:
             f"{self.owner}'s balance: {self.balance:.2f}"
         )
 
+
+
+    # =========================
+    # SECURITY
+    # =========================
 
 
     def change_pin(
@@ -354,9 +432,13 @@ class BankAccount:
 
 
         if (
+
             not isinstance(new_pin, str)
+
             or len(new_pin) != 4
+
             or not new_pin.isdigit()
+
         ):
 
             print(
@@ -370,10 +452,25 @@ class BankAccount:
         self.pin = new_pin
 
 
+
         self.add_transaction(
+
             "PIN Change",
+
             "PIN changed"
+
         )
+
+
+
+        self.add_notification(
+
+            "Security",
+
+            "Your account PIN was changed."
+
+        )
+
 
 
         print(
@@ -381,8 +478,14 @@ class BankAccount:
         )
 
 
+
         return True
 
+
+
+    # =========================
+    # ACCOUNT TYPE
+    # =========================
 
 
     def change_account_type(
@@ -404,6 +507,7 @@ class BankAccount:
         old_type = self.account_type
 
 
+
         if old_type == new_type:
 
             print(
@@ -419,28 +523,46 @@ class BankAccount:
 
 
         self.add_transaction(
+
             "Account Upgrade",
+
             f"{old_type} -> {new_type}"
+
         )
 
 
-        show_account_type_change(
-            old_type,
-            new_type
+
+        self.add_notification(
+
+            "Account Type",
+
+            f"Account changed from {old_type} to {new_type}."
+
         )
+
 
 
         return True
 
 
 
+    # =========================
+    # INTEREST SYSTEM
+    # =========================
+
+
     def calculate_interest(self):
 
         rate = self.INTEREST_RATES[
+
             self.account_type
+
         ]
 
+
         return self.balance * rate
+
+
 
 
 
@@ -461,20 +583,32 @@ class BankAccount:
 
 
         self.add_transaction(
+
             "Interest",
+
             f"Interest Earned: {interest}"
+
         )
 
 
 
-        show_interest_payment(
-            self,
-            interest
+        self.add_notification(
+
+            "Interest",
+
+            f"Interest payment of {interest:.2f} received."
+
         )
+
 
 
         return True
 
+
+
+    # =========================
+    # ACCOUNT NOTES
+    # =========================
 
 
     def change_account_note(
@@ -492,14 +626,156 @@ class BankAccount:
         self.account_note = note.strip()
 
 
+
         self.add_transaction(
+
             "Account Note",
+
             "Account note updated"
+
         )
 
 
+
+        self.add_notification(
+
+            "Account",
+
+            "Your account note was updated."
+
+        )
+
+
+
         return True
+
+
+
+    # =========================
+    # NOTIFICATIONS
+    # =========================
+
+
+    def add_notification(
+        self,
+        title,
+        message
+    ):
+
+
+        notification = {
+
+            "title": title,
+
+            "message": message,
+
+            "date": datetime.now().strftime(
+
+                "%Y-%m-%d %H:%M:%S"
+
+            ),
+
+            "read": False
+
+        }
+
+
+
+        self.notifications.append(
+
+            notification
+
+        )
+
+
+
+        return True
+
+
+
+
+
+    def show_notifications(self):
+
+
+        print(
+            "\n=== NOTIFICATIONS ==="
+        )
+
+
+
+        if not self.notifications:
+
+            print(
+                "No notifications."
+            )
+
+            return
+
+
+
+        for notification in reversed(
+
+            self.notifications
+
+        ):
+
+
+            status = (
+
+                "READ"
+
+                if notification.get("read")
+
+                else "NEW"
+
+            )
+
+
+
+            print(
+
+                f"[{status}] "
+
+                f"{notification.get('date')} | "
+
+                f"{notification.get('title')} | "
+
+                f"{notification.get('message')}"
+
+            )
+
+
+
+            notification["read"] = True
+
+
+
+
+
+    def unread_notifications(self):
+
+
+        count = 0
+
+
+
+        for notification in self.notifications:
+
+
+            if not notification.get("read"):
+
+                count += 1
+
+
+
+        return count
     
+
+        # =========================
+    # CARD SYSTEM COMPATIBILITY
+    # =========================
+
 
     def create_card(self):
 
@@ -512,35 +788,43 @@ class BankAccount:
             return False
 
 
-        card_number = ""
 
-        for _ in range(16):
-
-            card_number += str(
-                random.randint(0, 9)
-            )
+        from core.card import BankCard
 
 
-        self.card = {
 
-            "number": card_number,
+        self.card = BankCard(
 
-            "status": "Active",
+            self.account_number
 
-            "expiry": "2030-12"
+        )
 
-        }
 
 
         self.add_transaction(
+
             "Card Created",
+
             "New bank card created"
+
         )
+
+
+
+        self.add_notification(
+
+            "Card",
+
+            "A new bank card has been issued."
+
+        )
+
 
 
         print(
             "Card created successfully."
         )
+
 
 
         return True
@@ -561,22 +845,8 @@ class BankAccount:
 
 
 
-        print(
-            "\n=== BANK CARD ==="
-        )
+        self.card.show_card()
 
-
-        print(
-            f"Card Number: {self.card['number']}"
-        )
-
-        print(
-            f"Expiry: {self.card['expiry']}"
-        )
-
-        print(
-            f"Status: {self.card['status']}"
-        )
 
 
         return True
@@ -597,18 +867,34 @@ class BankAccount:
 
 
 
-        self.card["status"] = "Blocked"
+        self.card.freeze()
+
 
 
         self.add_transaction(
+
             "Card Blocked",
+
             "Bank card blocked"
+
         )
+
+
+
+        self.add_notification(
+
+            "Card",
+
+            "Your bank card has been blocked."
+
+        )
+
 
 
         print(
             "Card blocked."
         )
+
 
 
         return True
@@ -629,13 +915,28 @@ class BankAccount:
 
 
 
-        self.card["status"] = "Active"
+        self.card.activate()
+
 
 
         self.add_transaction(
-            "Card Unblocked",
-            "Bank card unblocked"
+
+            "Card Activated",
+
+            "Bank card activated"
+
         )
+
+
+
+        self.add_notification(
+
+            "Card",
+
+            "Your bank card has been activated."
+
+        )
+
 
 
         print(
@@ -643,4 +944,123 @@ class BankAccount:
         )
 
 
+
         return True
+
+
+
+    # =========================
+    # SCHEDULED PAYMENTS
+    # =========================
+
+
+    def add_scheduled_payment(
+        self,
+        payment
+    ):
+
+        self.scheduled_payments.append(
+
+            payment
+
+        )
+
+
+        return True
+
+
+
+
+
+    def remove_scheduled_payment(
+        self,
+        payment
+    ):
+
+
+        if payment in self.scheduled_payments:
+
+            self.scheduled_payments.remove(
+
+                payment
+
+            )
+
+            return True
+
+
+
+        return False
+
+
+
+    # =========================
+    # LOANS
+    # =========================
+
+
+    def add_loan(
+        self,
+        loan
+    ):
+
+
+        self.loans.append(
+
+            loan
+
+        )
+
+
+        return True
+
+
+
+
+
+    def remove_loan(
+        self,
+        loan
+    ):
+
+
+        if loan in self.loans:
+
+            self.loans.remove(
+
+                loan
+
+            )
+
+            return True
+
+
+
+        return False
+
+
+
+    # =========================
+    # INFORMATION
+    # =========================
+
+
+    def get_account_summary(self):
+
+        return {
+
+            "owner": self.owner,
+
+            "account_number": self.account_number,
+
+            "account_type": self.account_type,
+
+            "balance": self.balance,
+
+            "locked": self.locked,
+
+            "transactions": len(self.transactions),
+
+            "credit_score": self.credit_score
+
+        }

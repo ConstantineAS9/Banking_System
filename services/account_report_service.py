@@ -2,7 +2,9 @@ from datetime import datetime
 
 
 
-def generate_monthly_statement(account):
+def generate_monthly_statement(
+    account
+):
 
     current_month = datetime.now().strftime(
         "%Y-%m"
@@ -10,9 +12,13 @@ def generate_monthly_statement(account):
 
 
     deposits = 0
+
     withdrawals = 0
+
     transfers_sent = 0
+
     transfers_received = 0
+
     interest = 0
 
 
@@ -23,7 +29,10 @@ def generate_monthly_statement(account):
     for transaction in account.transactions:
 
 
-        if not isinstance(transaction, dict):
+        if not isinstance(
+            transaction,
+            dict
+        ):
 
             continue
 
@@ -36,7 +45,9 @@ def generate_monthly_statement(account):
 
 
 
-        if not timestamp.startswith(current_month):
+        if not timestamp.startswith(
+            current_month
+        ):
 
             continue
 
@@ -60,6 +71,7 @@ def generate_monthly_statement(account):
         )
 
 
+
         amount = extract_amount(
             message
         )
@@ -71,9 +83,11 @@ def generate_monthly_statement(account):
             deposits += amount
 
 
+
         elif category == "Withdrawal":
 
             withdrawals += amount
+
 
 
         elif category == "Transfer Sent":
@@ -81,9 +95,11 @@ def generate_monthly_statement(account):
             transfers_sent += amount
 
 
+
         elif category == "Transfer Received":
 
             transfers_received += amount
+
 
 
         elif category == "Interest":
@@ -93,9 +109,18 @@ def generate_monthly_statement(account):
 
 
 
-    print("\n===================================")
-    print("        MONTHLY STATEMENT")
-    print("===================================")
+
+    print(
+        "\n==================================="
+    )
+
+    print(
+        "        MONTHLY STATEMENT"
+    )
+
+    print(
+        "==================================="
+    )
 
 
     print(
@@ -111,7 +136,9 @@ def generate_monthly_statement(account):
     )
 
 
-    print("-----------------------------------")
+    print(
+        "-----------------------------------"
+    )
 
 
     print(
@@ -119,7 +146,9 @@ def generate_monthly_statement(account):
     )
 
 
-    print("-----------------------------------")
+    print(
+        "-----------------------------------"
+    )
 
 
     print(
@@ -143,51 +172,97 @@ def generate_monthly_statement(account):
     )
 
 
-    print("-----------------------------------")
-    print("Transactions:")
-    print("-----------------------------------")
+    print(
+        "-----------------------------------"
+    )
+
+
+    print(
+        "Transactions:"
+    )
+
+
+    print(
+        "-----------------------------------"
+    )
 
 
 
     if not monthly_transactions:
+
 
         print(
             "No transactions this month."
         )
 
 
+
     else:
+
 
         for transaction in monthly_transactions:
 
+
             print(
 
-                f"{transaction.get('timestamp')} | "
-                f"{transaction.get('category')} | "
-                f"{transaction.get('message')}"
+                f"{transaction.get('timestamp', 'Unknown')} | "
+
+                f"{transaction.get('category', 'Unknown')} | "
+
+                f"{transaction.get('message', '')}"
 
             )
 
 
-    print("===================================")
+
+    print(
+        "==================================="
+    )
 
 
 
 
 
-def extract_amount(message):
+def extract_amount(
+    message
+):
 
-    if not isinstance(message, str):
+    if not isinstance(
+        message,
+        str
+    ):
 
         return 0
 
 
 
-    for word in message.replace(",", "").split():
+    words = (
+        message
+        .replace(",", "")
+        .replace(":", " ")
+        .split()
+    )
+
+
+
+    amounts = []
+
+
+
+    for word in words:
+
 
         try:
 
-            return float(word)
+            value = float(
+                word
+            )
+
+
+            amounts.append(
+                value
+            )
+
 
         except ValueError:
 
@@ -195,17 +270,32 @@ def extract_amount(message):
 
 
 
-    return 0
+    if not amounts:
+
+        return 0
+
+
+
+    return amounts[-1]
 
 
 
 
 
-def search_transactions(account, keyword):
+def search_transactions(
+    account,
+    keyword
+):
 
     if (
-        not isinstance(keyword, str)
+
+        not isinstance(
+            keyword,
+            str
+        )
+
         or not keyword.strip()
+
     ):
 
         print(
@@ -219,13 +309,12 @@ def search_transactions(account, keyword):
     keyword = keyword.lower().strip()
 
 
-
     found = False
 
 
 
     print(
-        "\n=== Search Results ==="
+        "\n=== SEARCH RESULTS ==="
     )
 
 
@@ -233,34 +322,64 @@ def search_transactions(account, keyword):
     for transaction in account.transactions:
 
 
-        if isinstance(transaction, dict):
+
+        if isinstance(
+            transaction,
+            dict
+        ):
+
 
             text = (
 
-                str(transaction.get("category", ""))
-                + " "
-                + str(transaction.get("message", ""))
+                str(
+                    transaction.get(
+                        "category",
+                        ""
+                    )
+                )
+
+                +
+
+                " "
+
+                +
+
+                str(
+                    transaction.get(
+                        "message",
+                        ""
+                    )
+                )
 
             ).lower()
 
 
+
         else:
 
-            text = str(transaction).lower()
+
+            text = str(
+                transaction
+            ).lower()
 
 
 
         if keyword in text:
 
+
             print(
                 transaction
             )
+
 
             found = True
 
 
 
+
+
     if not found:
+
 
         print(
             "No matching transactions found."
@@ -270,20 +389,33 @@ def search_transactions(account, keyword):
 
 
 
-def show_transaction_statistics(account):
+def show_transaction_statistics(
+    account
+):
 
-    deposits = 0
-    withdrawals = 0
-    transfers_sent = 0
-    transfers_received = 0
-    pin_changes = 0
+    statistics = {
+
+        "Deposits": 0,
+
+        "Withdrawals": 0,
+
+        "Transfers Sent": 0,
+
+        "Transfers Received": 0,
+
+        "PIN Changes": 0
+
+    }
 
 
 
     for transaction in account.transactions:
 
 
-        if not isinstance(transaction, dict):
+        if not isinstance(
+            transaction,
+            dict
+        ):
 
             continue
 
@@ -292,70 +424,66 @@ def show_transaction_statistics(account):
         category = transaction.get(
             "category",
             ""
-        ).lower()
+        )
+
+        category = category.lower()
 
 
 
         if category == "deposit":
 
-            deposits += 1
+            statistics["Deposits"] += 1
+
 
 
         elif category == "withdrawal":
 
-            withdrawals += 1
+            statistics["Withdrawals"] += 1
+
 
 
         elif category == "transfer sent":
 
-            transfers_sent += 1
+            statistics["Transfers Sent"] += 1
+
 
 
         elif category == "transfer received":
 
-            transfers_received += 1
+            statistics["Transfers Received"] += 1
+
 
 
         elif category == "pin change":
 
-            pin_changes += 1
+            statistics["PIN Changes"] += 1
 
 
 
-
-    print(
-        "\n=== Transaction Statistics ==="
-    )
 
 
     print(
-        f"Deposits           : {deposits}"
-    )
-
-    print(
-        f"Withdrawals        : {withdrawals}"
-    )
-
-    print(
-        f"Transfers Sent     : {transfers_sent}"
-    )
-
-    print(
-        f"Transfers Received : {transfers_received}"
-    )
-
-    print(
-        f"PIN Changes        : {pin_changes}"
+        "\n=== TRANSACTION STATISTICS ==="
     )
 
 
 
+    for name, value in statistics.items():
+
+        print(
+            f"{name:<20}: {value}"
+        )
 
 
-def show_information(account):
+
+
+
+def show_information(
+    account
+):
 
     print(
-        "\n=== Account Information ==="
+        "\n=== ACCOUNT INFORMATION ==="
     )
 
 
@@ -363,37 +491,46 @@ def show_information(account):
         f"Owner: {account.owner}"
     )
 
+
     print(
         f"Account Number: {account.account_number}"
     )
+
 
     print(
         f"Account Type: {account.account_type}"
     )
 
+
     print(
         f"Balance: {account.balance:.2f}"
     )
 
+
     print(
-        f"Account Status: {'Locked' if account.locked else 'Active'}"
+        f"Status: {'Locked' if account.locked else 'Active'}"
     )
+
 
     print(
         f"Failed Login Attempts: {account.failed_attempts}"
     )
 
+
     print(
-        f"Total Transactions: {len(account.transactions)}"
+        f"Transactions: {len(account.transactions)}"
     )
+
 
     print(
         f"Created: {account.created_date}"
     )
 
+
     print(
-        f"Account Note: {account.account_note if account.account_note else 'No note'}"
+        f"Note: {account.account_note if account.account_note else 'No note'}"
     )
+
 
 
     show_transaction_statistics(

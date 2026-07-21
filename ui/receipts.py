@@ -1,18 +1,40 @@
+def print_receipt_header(
+    title
+):
+
+    print(
+        "\n" + "=" * 40
+    )
+
+    print(
+        title.center(40)
+    )
+
+    print(
+        "=" * 40
+    )
+
+
+
+
+
+def print_receipt_footer():
+
+    print(
+        "=" * 40
+    )
+
+
+
+
+
 def show_deposit_receipt(
     account,
     amount
 ):
 
-    print(
-        "\n==================================="
-    )
-
-    print(
-        "        DEPOSIT RECEIPT"
-    )
-
-    print(
-        "==================================="
+    print_receipt_header(
+        "DEPOSIT RECEIPT"
     )
 
 
@@ -33,9 +55,7 @@ def show_deposit_receipt(
     )
 
 
-    print(
-        "==================================="
-    )
+    print_receipt_footer()
 
 
 
@@ -46,16 +66,8 @@ def show_withdrawal_receipt(
     amount
 ):
 
-    print(
-        "\n==================================="
-    )
-
-    print(
-        "       WITHDRAWAL RECEIPT"
-    )
-
-    print(
-        "==================================="
+    print_receipt_header(
+        "WITHDRAWAL RECEIPT"
     )
 
 
@@ -71,10 +83,12 @@ def show_withdrawal_receipt(
         f"Balance : {account.balance:.2f}"
     )
 
-
     print(
-        "==================================="
+        "Status  : SUCCESS"
     )
+
+
+    print_receipt_footer()
 
 
 
@@ -85,16 +99,8 @@ def show_interest_payment(
     interest
 ):
 
-    print(
-        "\n==================================="
-    )
-
-    print(
-        "        INTEREST PAYMENT"
-    )
-
-    print(
-        "==================================="
+    print_receipt_header(
+        "INTEREST PAYMENT"
     )
 
 
@@ -110,10 +116,12 @@ def show_interest_payment(
         f"Balance  : {account.balance:.2f}"
     )
 
-
     print(
-        "==================================="
+        "Status   : SUCCESS"
     )
+
+
+    print_receipt_footer()
 
 
 
@@ -124,16 +132,8 @@ def show_account_type_change(
     new_type
 ):
 
-    print(
-        "\n==================================="
-    )
-
-    print(
-        "      ACCOUNT TYPE CHANGED"
-    )
-
-    print(
-        "==================================="
+    print_receipt_header(
+        "ACCOUNT TYPE CHANGED"
     )
 
 
@@ -145,7 +145,9 @@ def show_account_type_change(
         f"New Type      : {new_type}"
     )
 
-
     print(
-        "==================================="
+        "Status        : SUCCESS"
     )
+
+
+    print_receipt_footer()

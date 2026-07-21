@@ -39,12 +39,15 @@ class BankCard:
 
     def generate_card_number(self):
 
-        return str(
-            random.randint(
-                1000000000000000,
-                9999999999999999
+        number = ""
+
+        for _ in range(16):
+
+            number += str(
+                random.randint(0, 9)
             )
-        )
+
+        return number
 
 
 
@@ -61,8 +64,9 @@ class BankCard:
 
     def generate_expiry_date(self):
 
-        expiry = datetime.now() + timedelta(
-            days=365 * 5
+        expiry = (
+            datetime.now()
+            + timedelta(days=365 * 5)
         )
 
         return expiry.strftime(
@@ -83,6 +87,12 @@ class BankCard:
 
 
 
+    def is_active(self):
+
+        return self.active
+
+
+
     def show_card(self):
 
         print(
@@ -90,7 +100,7 @@ class BankCard:
         )
 
         print(
-            "           BANK CARD"
+            "             BANK CARD"
         )
 
         print(
@@ -115,4 +125,63 @@ class BankCard:
 
         print(
             "==================================="
+        )
+
+
+
+    def to_dict(self):
+
+        return {
+
+            "account_number": self.account_number,
+
+            "card_number": self.card_number,
+
+            "expiry_date": self.expiry_date,
+
+            "cvv": self.cvv,
+
+            "active": self.active
+
+        }
+
+
+
+    @classmethod
+    def from_dict(
+        cls,
+        data
+    ):
+
+        if not isinstance(
+            data,
+            dict
+        ):
+
+            return None
+
+
+        return cls(
+
+            account_number=data.get(
+                "account_number"
+            ),
+
+            card_number=data.get(
+                "card_number"
+            ),
+
+            expiry_date=data.get(
+                "expiry_date"
+            ),
+
+            cvv=data.get(
+                "cvv"
+            ),
+
+            active=data.get(
+                "active",
+                True
+            )
+
         )

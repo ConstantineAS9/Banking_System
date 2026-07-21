@@ -1,5 +1,10 @@
 from core.account import BankAccount
 
+from core.card import BankCard
+
+from core.scheduled_payment import ScheduledPayment
+
+
 from services.account_validator import (
     validate_owner,
     validate_balance,
@@ -14,7 +19,60 @@ from services.account_validator import (
 
 
 
-def account_to_dict(account):
+
+
+def account_to_dict(
+    account
+):
+
+    card_data = None
+
+
+    if account.card:
+
+
+        if isinstance(
+            account.card,
+            BankCard
+        ):
+
+            card_data = account.card.to_dict()
+
+
+        else:
+
+            card_data = account.card
+
+
+
+
+
+    scheduled_payments = []
+
+
+
+    for payment in account.scheduled_payments:
+
+
+        if isinstance(
+            payment,
+            ScheduledPayment
+        ):
+
+            scheduled_payments.append(
+                payment.to_dict()
+            )
+
+
+        else:
+
+            scheduled_payments.append(
+                payment
+            )
+
+
+
+
 
     return {
 
@@ -26,6 +84,8 @@ def account_to_dict(account):
 
         "account_number": account.account_number,
 
+        "account_type": account.account_type,
+
         "transactions": account.transactions,
 
         "failed_attempts": account.failed_attempts,
@@ -36,15 +96,15 @@ def account_to_dict(account):
 
         "account_note": account.account_note,
 
-        "card": account.card,
+        "card": card_data,
 
-        "scheduled_payments": account.scheduled_payments,
+        "scheduled_payments": scheduled_payments,
 
         "loans": account.loans,
 
         "credit_score": account.credit_score,
 
-        "account_type": account.account_type
+        "notifications": account.notifications
 
     }
 
@@ -52,12 +112,19 @@ def account_to_dict(account):
 
 
 
-def dict_to_account(data):
+def dict_to_account(
+    data
+):
 
 
-    if not isinstance(data, dict):
+    if not isinstance(
+        data,
+        dict
+    ):
 
         return None
+
+
 
 
 
@@ -75,76 +142,245 @@ def dict_to_account(data):
 
 
 
+
+
     account = BankAccount(
 
         validate_owner(
-            data.get("owner")
+            data.get(
+                "owner"
+            )
         ),
 
         validate_balance(
-            data.get("balance")
+            data.get(
+                "balance"
+            )
         ),
 
         validate_pin(
-            data.get("pin")
+            data.get(
+                "pin"
+            )
         ),
 
         account_number,
 
         validate_account_type(
-            data.get("account_type")
+            data.get(
+                "account_type"
+            )
         )
 
     )
 
 
 
+
+
     account.transactions = validate_transactions(
-        data.get("transactions")
+
+        data.get(
+            "transactions"
+        )
+
     )
+
+
+
 
 
     account.failed_attempts = validate_failed_attempts(
-        data.get("failed_attempts")
+
+        data.get(
+            "failed_attempts"
+        )
+
     )
+
+
+
 
 
     account.locked = validate_locked(
-        data.get("locked")
+
+        data.get(
+            "locked"
+        )
+
     )
+
+
+
 
 
     account.created_date = validate_string(
-        data.get("created_date")
+
+        data.get(
+            "created_date"
+        )
+
     )
+
+
+
 
 
     account.account_note = validate_string(
-        data.get("account_note")
+
+        data.get(
+            "account_note"
+        )
+
     )
 
 
-    account.card = data.get(
+
+
+
+
+
+    card_data = data.get(
         "card"
     )
 
 
-    account.scheduled_payments = data.get(
+
+    if isinstance(
+        card_data,
+        dict
+    ):
+
+
+        account.card = BankCard.from_dict(
+            card_data
+        )
+
+
+    else:
+
+
+        account.card = None
+
+
+
+
+
+    account.scheduled_payments = []
+
+
+
+    payments = data.get(
         "scheduled_payments",
         []
     )
 
 
+
+    if isinstance(
+        payments,
+        list
+    ):
+
+
+        for payment_data in payments:
+
+
+
+            if isinstance(
+                payment_data,
+                dict
+            ):
+
+
+                payment = ScheduledPayment.from_dict(
+                    payment_data
+                )
+
+
+                if payment:
+
+
+                    account.scheduled_payments.append(
+                        payment
+                    )
+
+
+
+            else:
+
+
+                account.scheduled_payments.append(
+                    payment_data
+                )
+
+
+
+
+
+
+
     account.loans = data.get(
+
         "loans",
+
         []
+
     )
+
+
+
+    if not isinstance(
+        account.loans,
+        list
+    ):
+
+        account.loans = []
+
+
+
 
 
     account.credit_score = data.get(
+
         "credit_score",
+
         600
+
     )
+
+
+
+    if not isinstance(
+        account.credit_score,
+        int
+    ):
+
+        account.credit_score = 600
+
+
+
+
+
+    account.notifications = data.get(
+
+        "notifications",
+
+        []
+
+    )
+
+
+
+    if not isinstance(
+        account.notifications,
+        list
+    ):
+
+        account.notifications = []
+
+
+
 
 
     return account

@@ -1,16 +1,29 @@
+def print_header(
+    title
+):
+
+    print(
+        "\n" + "=" * 40
+    )
+
+    print(
+        title.center(40)
+    )
+
+    print(
+        "=" * 40
+    )
+
+
+
+
+
 def show_menu():
 
-    print(
-        "\n" + "=" * 35
+    print_header(
+        "BANKING SYSTEM"
     )
 
-    print(
-        "       BANKING SYSTEM"
-    )
-
-    print(
-        "=" * 35
-    )
 
     print(
         "1. Create Account"
@@ -34,16 +47,13 @@ def show_menu():
 
 def show_account_menu():
 
-    print(
-        "\n" + "=" * 35
+    print_header(
+        "ACCOUNT MENU"
     )
 
-    print(
-        "        ACCOUNT MENU"
-    )
 
     print(
-        "=" * 35
+        "--- Banking Operations ---"
     )
 
     print(
@@ -70,6 +80,12 @@ def show_account_menu():
         "6. Search Transactions"
     )
 
+
+
+    print(
+        "\n--- Account Management ---"
+    )
+
     print(
         "7. Change PIN"
     )
@@ -90,56 +106,86 @@ def show_account_menu():
         "11. Change Account Type"
     )
 
+
+
+    print(
+        "\n--- Reports & Security ---"
+    )
+
     print(
         "12. Monthly Statement"
     )
 
     print(
-        "13. Create Bank Card"
+        "13. Notifications"
+    )
+
+
+
+    print(
+        "\n--- Card System ---"
     )
 
     print(
-        "14. Show Card"
+        "14. Create Bank Card"
     )
 
     print(
-        "15. Block Card"
+        "15. Show Card"
     )
 
     print(
-        "16. Unblock Card"
+        "16. Block Card"
     )
 
     print(
-        "17. Create Scheduled Payment"
+        "17. Unblock Card"
+    )
+
+
+
+    print(
+        "\n--- Scheduled Payments ---"
     )
 
     print(
-        "18. Show Scheduled Payments"
+        "18. Create Scheduled Payment"
     )
 
     print(
-        "19. Execute Scheduled Payment"
+        "19. Show Scheduled Payments"
     )
 
     print(
-        "20. Delete Scheduled Payment"
+        "20. Execute Scheduled Payment"
     )
 
     print(
-        "21. Request Loan"
+        "21. Delete Scheduled Payment"
+    )
+
+
+
+    print(
+        "\n--- Loan System ---"
     )
 
     print(
-        "22. Show Loans"
+        "22. Request Loan"
     )
 
     print(
-        "23. Pay Loan"
+        "23. Show Loans"
     )
 
     print(
-        "24. Logout"
+        "24. Pay Loan"
+    )
+
+
+
+    print(
+        "\n25. Logout"
     )
 
 
@@ -148,17 +194,10 @@ def show_account_menu():
 
 def show_admin_menu():
 
-    print(
-        "\n" + "=" * 35
+    print_header(
+        "ADMIN PANEL"
     )
 
-    print(
-        "         ADMIN PANEL"
-    )
-
-    print(
-        "=" * 35
-    )
 
     print(
         "1. Show All Accounts"

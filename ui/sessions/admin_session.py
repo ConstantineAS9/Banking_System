@@ -1,17 +1,22 @@
-from ui.input_handler import get_integer
+from ui.input_handler import (
+    get_integer
+)
 
-from ui.menus import show_admin_menu
-
-
-
-def admin_session(bank):
-
-
-    choice = 0
+from ui.menus import (
+    show_admin_menu
+)
 
 
 
-    while choice != 7:
+
+
+def admin_session(
+    bank,
+    save_callback=None
+):
+
+
+    while True:
 
 
         show_admin_menu()
@@ -24,10 +29,14 @@ def admin_session(bank):
 
 
 
+
+
         if choice == 1:
 
 
             bank.show_accounts()
+
+
 
 
 
@@ -39,9 +48,12 @@ def admin_session(bank):
             ).strip()
 
 
+
             bank.search_accounts(
                 keyword
             )
+
+
 
 
 
@@ -52,10 +64,20 @@ def admin_session(bank):
 
 
 
+
+
         elif choice == 4:
 
 
             bank.apply_interest_to_all_accounts()
+
+
+
+            if save_callback:
+
+                save_callback()
+
+
 
 
 
@@ -67,9 +89,17 @@ def admin_session(bank):
             )
 
 
-            bank.unlock_account(
+
+            if bank.unlock_account(
                 account_number
-            )
+            ):
+
+
+                if save_callback:
+
+                    save_callback()
+
+
 
 
 
@@ -83,7 +113,7 @@ def admin_session(bank):
 
 
             print(
-                "1. Basic"
+                "\n1. Basic"
             )
 
             print(
@@ -102,7 +132,7 @@ def admin_session(bank):
 
 
 
-            types = {
+            account_types = {
 
                 1: "Basic",
 
@@ -114,16 +144,32 @@ def admin_session(bank):
 
 
 
-            if account_choice in types:
+            if account_choice not in account_types:
 
 
-                bank.change_account_type(
+                print(
+                    "Invalid account type."
+                )
+
+
+
+            else:
+
+
+                if bank.change_account_type(
 
                     account_number,
 
-                    types[account_choice]
+                    account_types[account_choice]
 
-                )
+                ):
+
+
+                    if save_callback:
+
+                        save_callback()
+
+
 
 
 
@@ -133,6 +179,11 @@ def admin_session(bank):
             print(
                 "Returning to main menu."
             )
+
+
+            break
+
+
 
 
 

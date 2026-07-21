@@ -1,4 +1,5 @@
 from services.save_system import SaveSystem
+
 from core.bank import Bank
 
 from ui.input_handler import (
@@ -6,7 +7,9 @@ from ui.input_handler import (
     get_float
 )
 
-from ui.menus import show_menu
+from ui.menus import (
+    show_menu
+)
 
 from ui.sessions.account_session import (
     account_session
@@ -16,10 +19,16 @@ from ui.sessions.admin_session import (
     admin_session
 )
 
-from services.security_service import validate_pin
+from services.security_service import (
+    validate_pin
+)
+
+
+
 
 
 class Application:
+
 
     def __init__(self):
 
@@ -28,19 +37,22 @@ class Application:
         self.save_system = SaveSystem()
 
 
+
         self.bank.set_save_callback(
             self.save_accounts
         )
 
 
-        loaded_accounts = (
-            self.save_system.load_accounts()
-        )
+
+        accounts = self.save_system.load_accounts()
+
 
 
         self.bank.load_accounts(
-            loaded_accounts
+            accounts
         )
+
+
 
 
 
@@ -52,11 +64,15 @@ class Application:
 
 
 
+
+
     def run(self):
 
         while True:
 
+
             show_menu()
+
 
 
             choice = get_integer(
@@ -64,39 +80,62 @@ class Application:
             )
 
 
+
+
+
             if choice == 1:
+
 
                 self.create_account()
 
 
 
+
+
             elif choice == 2:
+
 
                 self.login()
 
 
 
+
+
             elif choice == 3:
 
+
                 admin_session(
-                    self.bank
+
+                    self.bank,
+
+                    self.save_accounts
+
                 )
+
+
 
 
 
             elif choice == 4:
 
+
                 self.save_accounts()
+
+
 
                 print(
                     "\nGoodbye! Thank you for using the Banking System."
                 )
 
+
                 break
 
 
 
+
+
             else:
+
 
                 print(
                     "Invalid option."
@@ -104,31 +143,41 @@ class Application:
 
 
 
+
+
     def create_account(self):
+
 
         print(
             "\n=== Create Account ==="
         )
 
 
-        name = input(
+
+        owner = input(
             "Enter owner name: "
         ).strip()
 
 
-        if not name:
+
+        if not owner:
+
 
             print(
                 "Name cannot be empty."
             )
 
+
             return
+
+
 
 
 
         balance = get_float(
             "Enter starting balance: "
         )
+
 
 
         pin = input(
@@ -139,17 +188,22 @@ class Application:
 
         if not validate_pin(pin):
 
+
             print(
                 "Invalid PIN. PIN must contain exactly 4 numbers."
             )
 
+
             return
+
+
 
 
 
         print(
             "\n=== Account Type ==="
         )
+
 
         print(
             "1. Basic"
@@ -174,7 +228,9 @@ class Application:
         account_types = {
 
             1: "Basic",
+
             2: "Savings",
+
             3: "Premium"
 
         }
@@ -183,19 +239,26 @@ class Application:
 
         if account_choice not in account_types:
 
+
             print(
                 "Invalid account type."
             )
+
 
             return
 
 
 
+
+
         account = self.bank.create_account(
 
-            name,
+            owner,
+
             balance,
+
             pin,
+
             account_types[account_choice]
 
         )
@@ -204,20 +267,26 @@ class Application:
 
         if account:
 
+
             self.save_accounts()
 
 
 
+
+
     def login(self):
+
 
         print(
             "\n=== Login ==="
         )
 
 
+
         account_number = get_integer(
             "Enter account number: "
         )
+
 
 
         pin = input(
@@ -229,6 +298,7 @@ class Application:
         account = self.bank.login(
 
             account_number,
+
             pin
 
         )
@@ -237,10 +307,13 @@ class Application:
 
         if account:
 
+
             account_session(
 
                 self.bank,
+
                 account,
+
                 self.save_accounts
 
             )
